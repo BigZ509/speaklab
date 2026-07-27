@@ -3,12 +3,12 @@ import useAudioRecording from "../../hooks/use-audio-recording";
 
 export function RecordButton(){
     
-    const {isRecording, startRecording,stopRecording,recorderState} = useAudioRecording();
+    const { startRecording,stopRecording,recorderState} = useAudioRecording();
     
     return(
-        <Pressable onPress ={isRecording?stopRecording:startRecording}>
+        <Pressable onPress ={recorderState.isRecording?stopRecording:startRecording}>
         <Text>Record</Text>
-        {isRecording && <Text>Recording...</Text>}
+        {recorderState.isRecording && <Text>Recording...</Text>}
         
     </Pressable>
     )

@@ -7,24 +7,43 @@ import {
 } from "expo-audio";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
+import { errorHandling } from "@/utils/handle-error";
 
 export default function useAudioRecording() {
-  const [isRecording, setIsRecording] = useState(false);
-  //const [recordings, setRecordings]  = useState([]);
+  
+ 
 
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
 
   const startRecording = async () => {
-    await audioRecorder.prepareToRecordAsync();
-    audioRecorder.record();
-    setIsRecording(true);
+    
+    try{
+        await audioRecorder.prepareToRecordAsync();
+        audioRecorder.record();
+
+    }
+    catch(error){
+        if(error instanceof Error){
+            errorHandling("Recording Error",error);
+        }    
+    }
+       
   };
 
   const stopRecording = async () => {
-    await audioRecorder.stop();
-    console.log(audioRecorder.uri);
-    setIsRecording(false);
+    try{
+        await audioRecorder.stop();
+        console.log(audioRecorder.uri);
+    }
+    catch(error){
+        if(error instanceof Error){
+            errorHandling("Failed to stop recording", error);
+        }
+    }
+   
+    
+   
   };
 
   useEffect(() => {
@@ -40,5 +59,5 @@ export default function useAudioRecording() {
     })();
   }, []);
 
-  return { isRecording, startRecording, stopRecording, recorderState };
+  return {startRecording, stopRecording, recorderState };
 }
