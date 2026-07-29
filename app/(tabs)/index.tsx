@@ -6,6 +6,7 @@ import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { RecordButton } from '@/components/recording/record-button';
+import { Link } from "expo-router";
 
 export default function HomeScreen() {
   return (
@@ -23,6 +24,7 @@ export default function HomeScreen() {
         
       </ThemedView>
       <RecordButton />
+      <Link href="/login">Go to Login</Link>
     </ParallaxScrollView>
   );
 }

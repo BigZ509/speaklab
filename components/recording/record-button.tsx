@@ -1,14 +1,17 @@
 import { Pressable, Text } from "react-native";
 import useAudioRecording from "../../hooks/use-audio-recording";
+import { StyleSheet } from "react-native";
 
 export function RecordButton(){
     
-    const { startRecording,stopRecording,recorderState} = useAudioRecording();
+    const { isRecording,startRecording,stopRecording,} = useAudioRecording();
     
     return(
-        <Pressable onPress ={recorderState.isRecording?stopRecording:startRecording}>
+        <Pressable onPress ={isRecording?stopRecording:startRecording}>
         <Text>Record</Text>
-        {recorderState.isRecording && <Text>Recording...</Text>}
+        
+        {isRecording && <Text>Recording...</Text>}
+        
         
     </Pressable>
     )

@@ -15,12 +15,15 @@ export default function useAudioRecording() {
 
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
+  const [isRecording, setIsRecording] = useState(false);
 
   const startRecording = async () => {
     
     try{
         await audioRecorder.prepareToRecordAsync();
         audioRecorder.record();
+       setIsRecording(true);
+        
 
     }
     catch(error){
@@ -28,6 +31,7 @@ export default function useAudioRecording() {
             errorHandling("Recording Error",error);
         }    
     }
+    
        
   };
 
@@ -35,6 +39,7 @@ export default function useAudioRecording() {
     try{
         await audioRecorder.stop();
         console.log(audioRecorder.uri);
+        setIsRecording(false);
     }
     catch(error){
         if(error instanceof Error){
@@ -59,5 +64,5 @@ export default function useAudioRecording() {
     })();
   }, []);
 
-  return {startRecording, stopRecording, recorderState };
+  return {isRecording,startRecording, stopRecording};
 }
