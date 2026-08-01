@@ -1,54 +1,57 @@
+import { errorHandling } from "@/utils/handle-error";
 import {
-    AudioModule,
-    RecordingPresets,
-    setAudioModeAsync,
-    useAudioRecorder,
-    useAudioRecorderState,
+  AudioModule,
+  RecordingPresets,
+  setAudioModeAsync,
+  useAudioRecorder,
+  useAudioRecorderState,
+  useAudioPlayer,
+  useAudioPlayerStatus
 } from "expo-audio";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import { errorHandling } from "@/utils/handle-error";
+
 
 export default function useAudioRecording() {
-  
- 
-
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
   const [isRecording, setIsRecording] = useState(false);
+  const [recordingAudio, setRecordingAudio] = useState<string | null>(
+    null,
+  );
+  
+  const player = useAudioPlayer(recordingAudio);
+  const audioStatus = useAudioPlayerStatus(player);
+ 
 
   const startRecording = async () => {
-    
-    try{
-        await audioRecorder.prepareToRecordAsync();
-        audioRecorder.record();
-       setIsRecording(true);
-        
-
+    try {
+      setRecordingAudio(null);
+      await audioRecorder.prepareToRecordAsync();
+      audioRecorder.record();
+      setIsRecording(true);
+      
+    } 
+    catch (error) {
+      if (error instanceof Error) {
+        errorHandling("Recording Error", error);
+      }
     }
-    catch(error){
-        if(error instanceof Error){
-            errorHandling("Recording Error",error);
-        }    
-    }
-    
-       
   };
 
   const stopRecording = async () => {
-    try{
-        await audioRecorder.stop();
-        console.log(audioRecorder.uri);
-        setIsRecording(false);
+    try {
+       await audioRecorder.stop();
+      setRecordingAudio(audioRecorder.uri);
+      console.log(audioStatus.isLoaded)
+      console.log(recordingAudio);
+      setIsRecording(false);
     }
-    catch(error){
-        if(error instanceof Error){
-            errorHandling("Failed to stop recording", error);
-        }
+     catch (error) {
+      if (error instanceof Error) {
+        errorHandling("Failed to stop recording", error);
+      }
     }
-   
-    
-   
   };
 
   useEffect(() => {
@@ -64,5 +67,25 @@ export default function useAudioRecording() {
     })();
   }, []);
 
-  return {isRecording,startRecording, stopRecording};
+  const replayRecording = () =>{
+    if(!audioStatus.isLoaded){
+      Alert.alert("audio is not ready")
+    }
+    else{
+      player.play();
+    }
+  };
+    
+
+  const submitRecording = async () => {
+    try{
+
+    }
+    catch(error){
+
+    }
+  }
+    
+
+  return { isRecording, startRecording, stopRecording,recordingAudio, replayRecording,submitRecording,audioStatus};
 }
