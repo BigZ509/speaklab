@@ -5,8 +5,11 @@ import { View } from "react-native";
 
 export function RecordButton(){
     
-    const { isRecording,startRecording,stopRecording,recordingAudio, replayRecording, submitRecording,audioStatus} = useAudioRecording();
-    
+    const { isRecording,startRecording,stopRecording,recordingAudio,
+         replayRecording, submitRecording,audioStatus,transcriptionText,
+         isSubmitted } = useAudioRecording();
+        
+         console.log("render:", recordingAudio)
     
     return(
         <View>
@@ -18,6 +21,10 @@ export function RecordButton(){
             <Text>Replay</Text>
             {audioStatus.playing && <Text>Replaying...</Text>}
 
+         </Pressable>
+         <Pressable onPress={submitRecording}>
+            <Text>Submit</Text>
+            {isSubmitted && <Text selectable style = {{fontSize: 16}}>{transcriptionText}</Text>}
          </Pressable>
          
     </View>

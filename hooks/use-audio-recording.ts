@@ -1,28 +1,27 @@
+import { transcribeAudio, uploadRecording } from "@/services/transcription-services";
 import { errorHandling } from "@/utils/handle-error";
 import {
   AudioModule,
   RecordingPresets,
   setAudioModeAsync,
+  useAudioPlayer,
+  useAudioPlayerStatus,
   useAudioRecorder,
   useAudioRecorderState,
-  useAudioPlayer,
-  useAudioPlayerStatus
 } from "expo-audio";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
-
 
 export default function useAudioRecording() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
   const [isRecording, setIsRecording] = useState(false);
-  const [recordingAudio, setRecordingAudio] = useState<string | null>(
-    null,
-  );
-  
+  const [recordingAudio, setRecordingAudio] = useState<string | null>(null);
+
   const player = useAudioPlayer(recordingAudio);
   const audioStatus = useAudioPlayerStatus(player);
- 
+  const [transcriptionText, setTranscriptionText] = useState("");
+  const[isSubmitted, setIsSubmiteed] = useState(false);
 
   const startRecording = async () => {
     try {
@@ -30,9 +29,7 @@ export default function useAudioRecording() {
       await audioRecorder.prepareToRecordAsync();
       audioRecorder.record();
       setIsRecording(true);
-      
-    } 
-    catch (error) {
+    } catch (error) {
       if (error instanceof Error) {
         errorHandling("Recording Error", error);
       }
@@ -41,13 +38,12 @@ export default function useAudioRecording() {
 
   const stopRecording = async () => {
     try {
-       await audioRecorder.stop();
+      await audioRecorder.stop();
       setRecordingAudio(audioRecorder.uri);
-      console.log(audioStatus.isLoaded)
+      console.log(audioStatus.isLoaded);
       console.log(recordingAudio);
       setIsRecording(false);
-    }
-     catch (error) {
+    } catch (error) {
       if (error instanceof Error) {
         errorHandling("Failed to stop recording", error);
       }
@@ -67,25 +63,41 @@ export default function useAudioRecording() {
     })();
   }, []);
 
-  const replayRecording = () =>{
-    if(!audioStatus.isLoaded){
-      Alert.alert("audio is not ready")
-    }
-    else{
+  const replayRecording = () => {
+    if (!audioStatus.isLoaded) {
+      Alert.alert("audio is not ready");
+    } else {
       player.play();
     }
   };
-    
 
   const submitRecording = async () => {
-    try{
-
+    console.log("submit press");
+    setIsSubmiteed(false);
+    if (recordingAudio !== null) {
+      try {
+        const blob = await uploadRecording(recordingAudio);
+        console.log("got blob")
+        
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error);
+          errorHandling("Could not load file", error);
+        }
+      }
+      setIsSubmiteed(true);
     }
-    catch(error){
+  };
 
-    }
-  }
-    
-
-  return { isRecording, startRecording, stopRecording,recordingAudio, replayRecording,submitRecording,audioStatus};
+  return {
+    isRecording,
+    startRecording,
+    stopRecording,
+    recordingAudio,
+    replayRecording,
+    submitRecording,
+    audioStatus,
+    transcriptionText,
+    isSubmitted
+  };
 }
