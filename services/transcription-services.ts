@@ -2,26 +2,27 @@ import useAudioRecording from "@/hooks/use-audio-recording";
 import OpenAI from "openai";
 
 
-const API_KEY = process.env.EXPO_PUBLIC_API_KEY;
 
-export async function uploadRecording(recordingAudio: string) {
-  const fileData = await fetch(recordingAudio);
-  if (!fileData.ok) {
-    console.error("error loading file", fileData);
-    return;
-  }
-  const blob = await fileData.blob();
-  return blob;
-}
+export async function transcribeAudio(recordingAudio: string){
 
-export async function transcribeAudio(blob: Blob) {
-  const openai = new OpenAI({ apiKey: API_KEY });
-  const transcription = await openai.audio.transcriptions.create({
-    file: blob,
-    model: "gpt-transcribe",
+  const formData = new FormData();
+  formData.append('audio',{uri: recordingAudio,
+                  name:'recording.m4a',
+                  type: 'audio/m4a',
+                }as any
+              );
+
+  const response = await fetch('https://speaklab-backend-production.up.railway.app/transcribe', {
+    method: 'POST',
+    body: formData,
   });
 
-  console.log(transcription.text);
-  return transcription.text;
-  
+  if(!response.ok){
+    console.error('Transcription request failed', response.status);
+    return;
+  }
+
+  const data = await response.json();
+  console.log(data.text)
+  return data.text;
 }

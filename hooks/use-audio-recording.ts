@@ -76,10 +76,11 @@ export default function useAudioRecording() {
     setIsSubmiteed(false);
     if (recordingAudio !== null) {
       try {
-        const blob = await uploadRecording(recordingAudio);
-        console.log("got blob")
         
-      } catch (error) {
+          const transcript = await transcribeAudio(recordingAudio);
+          console.log("Transcript:", transcript);
+        }
+         catch (error) {
         if (error instanceof Error) {
           console.log(error);
           errorHandling("Could not load file", error);
