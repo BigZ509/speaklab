@@ -1,4 +1,4 @@
-import { transcribeAudio, uploadRecording } from "@/services/transcription-services";
+import { transcribeAudio } from "@/services/transcription-services";
 import { errorHandling } from "@/utils/handle-error";
 import {
   AudioModule,
@@ -11,18 +11,29 @@ import {
 } from "expo-audio";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
+import { findAmbigous } from "@/speechEngine/fillers";
+export type TranscriptResults = {
+    text: string;
+    words: Array<{
+      start: number;
+      end: number;
+      word: string;
+    }>;
+  };
 
 export default function useAudioRecording() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingAudio, setRecordingAudio] = useState<string | null>(null);
+  
 
   const player = useAudioPlayer(recordingAudio);
   const audioStatus = useAudioPlayerStatus(player);
-  const [transcriptionText, setTranscriptionText] = useState("");
-  const[isSubmitted, setIsSubmiteed] = useState(false);
 
+  const [isSubmitted, setIsSubmiteed] = useState(false);
+  const [transcriptText, setTranscriptText] =
+    useState<TranscriptResults | null>(null);
   const startRecording = async () => {
     try {
       setRecordingAudio(null);
@@ -76,11 +87,11 @@ export default function useAudioRecording() {
     setIsSubmiteed(false);
     if (recordingAudio !== null) {
       try {
+        const transcript = await transcribeAudio(recordingAudio);
+        findAmbigous(transcript);
         
-          const transcript = await transcribeAudio(recordingAudio);
-          console.log("Transcript:", transcript);
-        }
-         catch (error) {
+        
+      } catch (error) {
         if (error instanceof Error) {
           console.log(error);
           errorHandling("Could not load file", error);
@@ -98,7 +109,8 @@ export default function useAudioRecording() {
     replayRecording,
     submitRecording,
     audioStatus,
-    transcriptionText,
-    isSubmitted
+    transcriptText,
+    isSubmitted,
+    
   };
 }
