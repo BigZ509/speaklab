@@ -1,4 +1,4 @@
-import { TranscriptResults } from "@/hooks/use-audio-recording";
+import { TranscriptResults } from "@/scripts/types/types";
 export async function transcribeAudio(
   recordingAudio: string,
 ): Promise<TranscriptResults> {

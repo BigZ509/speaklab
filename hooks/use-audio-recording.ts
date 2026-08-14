@@ -9,17 +9,11 @@ import {
   useAudioRecorder,
   useAudioRecorderState,
 } from "expo-audio";
+import { Audio } from 'expo-av';
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { findAmbigous } from "@/speechEngine/fillers";
-export type TranscriptResults = {
-    text: string;
-    words: Array<{
-      start: number;
-      end: number;
-      word: string;
-    }>;
-  };
+import { TranscriptResults } from "@/scripts/types/types";
 
 export default function useAudioRecording() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -88,6 +82,7 @@ export default function useAudioRecording() {
     if (recordingAudio !== null) {
       try {
         const transcript = await transcribeAudio(recordingAudio);
+        console.log("this what the console logged: ",transcript.text)
         findAmbigous(transcript);
         
         
