@@ -6,6 +6,9 @@ import {
     Text,
     StyleSheet
 } from "react-native";
+import { auth, app} from "@/firebase/config";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "expo-router";
 
 const styles = StyleSheet.create({
   
@@ -40,11 +43,19 @@ const styles = StyleSheet.create({
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  function handleSubmit() {
-    console.log(email, password);
-    setEmail("");
-    setPassword("");
+   async function handleSubmit() {
+   
+    try{
+       await signInWithEmailAndPassword(auth, email, password);
+       router.replace("/(tabs)");
+       
+    }catch(error){
+      console.error(error);
+    }
+    
+    
   }
   
 

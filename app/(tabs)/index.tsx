@@ -25,6 +25,7 @@ export default function HomeScreen() {
       </ThemedView>
       <RecordButton />
       <Link href="/login">Go to Login</Link>
+      
     </ParallaxScrollView>
   );
 }
