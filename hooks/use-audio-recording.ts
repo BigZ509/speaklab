@@ -12,7 +12,7 @@ import {
 import { Audio } from 'expo-av';
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
-import { findAmbigous } from "@/speechEngine/fillers";
+import { fillerAnalyzer } from "@/speechEngine/fillers";
 import { TranscriptResults } from "@/scripts/types/types";
 
 export default function useAudioRecording() {
@@ -83,7 +83,7 @@ export default function useAudioRecording() {
       try {
         const transcript = await transcribeAudio(recordingAudio);
         console.log("this what the console logged: ",transcript.text)
-        findAmbigous(transcript);
+        fillerAnalyzer(transcript);
         
         
       } catch (error) {

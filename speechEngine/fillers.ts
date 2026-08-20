@@ -14,8 +14,7 @@ import { useState } from "react";
     end: number,
  }
 
-
-
+// Return the word at an index without requiring callers to handle bounds checks.
 function getWord(word: TranscriptWords[], index: number):TranscriptWords | undefined{
 
     return word[index];
@@ -24,8 +23,10 @@ function getWord(word: TranscriptWords[], index: number):TranscriptWords | undef
 export function fillerAnalyzer(transcript: TranscriptResults){
   const fillerOccurence = new Map<string, Occurence[]>();
 
-  findAmbigous(transcript, fillerOccurence);   // hand the notebook to person 1
-  findUnambigous(); // hand the same notebook to person 2
+    // Obvious fillers are always recorded; ambiguous words are recorded only when
+    // they occur beside an obvious filler in the transcript.
+  findAmbigous(transcript, fillerOccurence);   
+  findUnambigous(transcript,fillerOccurence); 
   
   return fillerOccurence; // read the final result, after both wrote in it
 
@@ -112,16 +113,28 @@ const ambigousSet = new Set([
 
             
         }
-        return fillerOccurence;
+        
     }
    
     
  
 
- function findUnambigous(){
+    function findUnambigous(transcript: TranscriptResults, fillerOccurence: Map<string, Occurence[]>){
+
+        for (const [index,word] of transcript.words.entries()){
+
+            if (unambigousSet.has(word.word)){
+                console.log("obvious filler: ", word.word);
+                if(!fillerOccurence.has(word.word)){
+                     fillerOccurence.set(word.word,[{start: word.start, end: word.end}]);
+                }else{
+                    fillerOccurence.get(word.word)?.push({start: word.start, end: word.end});
+                }
+                
+            }
+        }
 
 
-
- }
+    }
 
  
