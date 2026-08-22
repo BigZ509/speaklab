@@ -1,3 +1,4 @@
+import { EmailAuthCredential } from "firebase/auth";
 
 
 export type TranscriptResults = {
@@ -16,3 +17,9 @@ export type MetricResults = {
     score: number    // 0 - 10 normalized
 
 }
+
+export type User = {
+  email:string,
+  uid: string,
+  username: string
+} 

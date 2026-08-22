@@ -4,8 +4,15 @@ import {
     TextInput,
     View,
     Text,
-    StyleSheet
+    StyleSheet,
+    Alert
 } from "react-native";
+import { auth, db } from "@/firebase/config";
+import {createUserWithEmailAndPassword} from "firebase/auth"
+import { useRouter } from "expo-router";
+import { collection, setDoc, doc } from "firebase/firestore";
+import { User } from "@/scripts/types/types";
+ 
   const styles = StyleSheet.create({
   
     view:{
@@ -40,12 +47,35 @@ import {
     export function SignUpForm() {
     const[email, setEmail] = useState("");
     const [password, setPassWord] = useState("");
-    const [username, setUserName] = useState("")
+    const [username, setUserName] = useState("");
+     const router = useRouter();
+    
 
 
     async function handleSubmit() {
+      console.log("pressed");
+     try{
       
-      console.log("submit")
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      if(result.user.email === null){
+        return
+      }
+      const userDoc = doc(db, "user", result.user.uid); //createes locatoin in database
+      
+     const userData:User = { // give data the userobj type
+        email: result.user.email,
+        uid: result.user.uid,
+        username: username
+      }
+      await setDoc(userDoc,userData);//gives doc location and data
+      Alert.alert("creating Account...");
+      
+      router.replace("/(tabs)");//replaces screen
+     
+     }catch(error){
+     console.error(error);
+     }
+           
     }
     
 
@@ -82,7 +112,11 @@ import {
 
       <View style = {styles.fieldRow}>
 
-      <Pressable onPress={handleSubmit}>
+      <Pressable onPress={handleSubmit}
+      style={{
+      padding: 20,
+      backgroundColor: "red",
+      }}>
         <Text>Sign Up</Text>
       </Pressable>
       

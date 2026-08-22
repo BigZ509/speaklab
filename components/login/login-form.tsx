@@ -4,11 +4,15 @@ import {
     TextInput,
     View,
     Text,
-    StyleSheet
+    StyleSheet,
+    Alert
 } from "react-native";
-import { auth, app} from "@/firebase/config";
+import { auth, app, db} from "@/firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "expo-router";
+import { errorHandling } from "@/utils/handle-error";
+import { getDoc, doc} from "firebase/firestore";
+
 
 const styles = StyleSheet.create({
   
@@ -48,11 +52,16 @@ export function LoginForm() {
    async function handleSubmit() {
    
     try{
-       await signInWithEmailAndPassword(auth, email, password);
+     const logIn = await signInWithEmailAndPassword(auth, email, password);
+      const userDataLocation = doc(db,"user", logIn.user.uid); //creates userdata refrence
+     getDoc(userDataLocation);
+
        router.replace("/(tabs)");
+       Alert.alert("Loggin in!!")
        
     }catch(error){
       console.error(error);
+      Alert.alert("Failed to login");
     }
     
     
