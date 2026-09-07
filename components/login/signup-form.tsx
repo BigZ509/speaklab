@@ -9,9 +9,9 @@ import {
 } from "react-native";
 import { auth, db } from "@/firebase/config";
 import {createUserWithEmailAndPassword} from "firebase/auth"
-import { useRouter } from "expo-router";
-import { collection, setDoc, doc } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import { User } from "@/scripts/types/types";
+import { FirebaseError} from "firebase/app";
  
   const styles = StyleSheet.create({
   
@@ -48,7 +48,6 @@ import { User } from "@/scripts/types/types";
     const[email, setEmail] = useState("");
     const [password, setPassWord] = useState("");
     const [username, setUserName] = useState("");
-     const router = useRouter();
     
 
 
@@ -68,16 +67,35 @@ import { User } from "@/scripts/types/types";
         username: username
       }
       await setDoc(userDoc,userData);//gives doc location and data
-      Alert.alert("creating Account...");
+      Alert.alert("Account created!");
       
-      router.replace("/(tabs)");//replaces screen
+
      
      }catch(error){
-     console.error(error);
-     }
-           
+     console.log(error)
+     if(error instanceof FirebaseError){
+        switch(error.code){
+          case "auth/email-already-in-use":
+            Alert.alert("Email already in use");
+            break;
+          case "auth/weak-password":
+            Alert.alert("Weak password");
+            break;
+          default:
+            Alert.alert("Failed to create account")
+        }
+
+
+      }
+      else{
+          console.log(error);
+          Alert.alert("Failed to create account");
+
+        }
     }
-    
+
+    }
+
 
 
     return(

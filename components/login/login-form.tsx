@@ -7,11 +7,11 @@ import {
     StyleSheet,
     Alert
 } from "react-native";
-import { auth, app, db} from "@/firebase/config";
+import { auth, db} from "@/firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "expo-router";
-import { errorHandling } from "@/utils/handle-error";
 import { getDoc, doc} from "firebase/firestore";
+import { FirebaseError } from "firebase/app";
 
 
 const styles = StyleSheet.create({
@@ -54,17 +54,41 @@ export function LoginForm() {
     try{
      const logIn = await signInWithEmailAndPassword(auth, email, password);
       const userDataLocation = doc(db,"user", logIn.user.uid); //creates userdata refrence
-     getDoc(userDataLocation);
+      const userSnapshot = await getDoc(userDataLocation);
+      const userData = userSnapshot.data();
+      if(userData){
+        Alert.alert(`Welcome back ${userData.username}`)
+      }
+      router.replace("/(tabs)");
 
-       router.replace("/(tabs)");
-       Alert.alert("Loggin in!!")
-       
+
     }catch(error){
-      console.error(error);
-      Alert.alert("Failed to login");
+      if(error instanceof FirebaseError){
+        switch(error.code){
+
+          case "auth/invalid-credential":
+            Alert.alert("Wrong email or password");
+            break;
+          case "auth/user-not-found":
+            Alert.alert("No account with that email");
+            break;
+          case "auth/too-many-requests":
+            Alert.alert("Too many attemps - try again later");
+            break;
+          default:
+            Alert.alert("Failed to login");
+        }
+
+
+      }else{
+        console.log(error);
+        Alert.alert("Failed to login");
+      }
+
+
     }
-    
-    
+
+
   }
   
 
