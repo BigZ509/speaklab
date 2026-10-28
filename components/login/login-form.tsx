@@ -7,10 +7,8 @@ import {
     StyleSheet,
     Alert
 } from "react-native";
-import { auth, db} from "@/firebase/config";
+import { auth} from "@/firebase/config";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useRouter } from "expo-router";
-import { getDoc, doc} from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
 
 
@@ -47,20 +45,12 @@ const styles = StyleSheet.create({
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
 
    async function handleSubmit() {
    
     try{
-     const logIn = await signInWithEmailAndPassword(auth, email, password);
-      const userDataLocation = doc(db,"user", logIn.user.uid); //creates userdata refrence
-      const userSnapshot = await getDoc(userDataLocation);
-      const userData = userSnapshot.data();
-      if(userData){
-        Alert.alert(`Welcome back ${userData.username}`)
-      }
-      router.replace("/(tabs)");
-
+      // Routing waits for the authenticated user's profile.
+      await signInWithEmailAndPassword(auth, email.trim(), password);
 
     }catch(error){
       if(error instanceof FirebaseError){

@@ -10,7 +10,7 @@ import {
   useAudioRecorderState,
 } from "expo-audio";
 import { Audio } from 'expo-av';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { fillerAnalyzer } from "@/speechEngine/fillers";
 import { TranscriptResults } from "@/scripts/types/types";
@@ -25,12 +25,25 @@ export default function useAudioRecording() {
   const player = useAudioPlayer(recordingAudio);
   const audioStatus = useAudioPlayerStatus(player);
 
-  const [isSubmitted, setIsSubmiteed] = useState(false);
+  // Track submission progress and errors.
+  const [submissionStatus, setSubmissionStatus] =
+    useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [fillerResults, setFillerResults] =
+    useState<ReturnType<typeof fillerAnalyzer> | null>(null);
+  const submissionInFlight = useRef(false);
+  const isSubmitted = submissionStatus === "success";
   const [transcriptText, setTranscriptText] =
     useState<TranscriptResults | null>(null);
   const startRecording = async () => {
+    // Keep the recording stable during submission.
+    if (submissionInFlight.current) return;
     try {
       setRecordingAudio(null);
+      setTranscriptText(null);
+      setFillerResults(null);
+      setSubmissionError(null);
+      setSubmissionStatus("idle");
       await audioRecorder.prepareToRecordAsync();
       audioRecorder.record();
       setIsRecording(true);
@@ -77,22 +90,31 @@ export default function useAudioRecording() {
   };
 
   const submitRecording = async () => {
-    console.log("submit press");
-    setIsSubmiteed(false);
-    if (recordingAudio !== null) {
-      try {
-        const transcript = await transcribeAudio(recordingAudio);
-        console.log("this what the console logged: ",transcript.text)
-        fillerAnalyzer(transcript);
-        
-        
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error);
-          errorHandling("Could not load file", error);
-        }
-      }
-      setIsSubmiteed(true);
+    // Block duplicate taps before the next render.
+    if (!recordingAudio || isRecording || submissionInFlight.current) return;
+    submissionInFlight.current = true;
+    setSubmissionStatus("submitting");
+    setSubmissionError(null);
+    setTranscriptText(null);
+    setFillerResults(null);
+
+    try {
+      const transcript = await transcribeAudio(recordingAudio);
+      const fillers = fillerAnalyzer(transcript);
+      // Save results after analysis succeeds.
+      setTranscriptText(transcript);
+      setFillerResults(fillers);
+      setSubmissionStatus("success");
+    } catch (error) {
+      const failure = error instanceof Error
+        ? error
+        : new Error("Could not process your recording. Please try again.");
+      setSubmissionError(failure.message);
+      setSubmissionStatus("error");
+      errorHandling("Could not submit recording", failure);
+    } finally {
+      // Allow another submission or retry.
+      submissionInFlight.current = false;
     }
   };
 
@@ -106,6 +128,9 @@ export default function useAudioRecording() {
     audioStatus,
     transcriptText,
     isSubmitted,
+    submissionStatus,
+    submissionError,
+    fillerResults,
     
   };
 }

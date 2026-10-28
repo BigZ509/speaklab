@@ -18,10 +18,30 @@ export async function transcribeAudio(
   );
 
   if (!response.ok) {
-    console.error("Transcription request failed", response.status);
+    // Reject failed requests before analysis.
+    throw new Error(`Transcription failed (HTTP ${response.status}). Please try again.`);
   }
 
-  const data = await response.json();
+  const data: unknown = await response.json();
+
+  // Validate the transcript returned by the server.
+  if (!isTranscriptResults(data)) {
+    throw new Error("The server returned an invalid transcript. Please try again.");
+  }
 
   return data;
+}
+
+function isTranscriptResults(data: unknown): data is TranscriptResults {
+  if (typeof data !== "object" || data === null) return false;
+  if (!("text" in data) || typeof data.text !== "string") return false;
+  if (!("words" in data) || !Array.isArray(data.words)) return false;
+
+  return data.words.every((word: unknown) =>
+    typeof word === "object" && word !== null &&
+    "word" in word && typeof word.word === "string" &&
+    "start" in word && typeof word.start === "number" && Number.isFinite(word.start) &&
+    "end" in word && typeof word.end === "number" && Number.isFinite(word.end) &&
+    word.start >= 0 && word.end >= word.start
+  );
 }

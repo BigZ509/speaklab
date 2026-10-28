@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     Pressable,
     TextInput,
@@ -8,7 +8,7 @@ import {
     Alert
 } from "react-native";
 import { auth, db } from "@/firebase/config";
-import {createUserWithEmailAndPassword} from "firebase/auth"
+import { createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth"
 import { setDoc, doc } from "firebase/firestore";
 import { User } from "@/scripts/types/types";
 import { FirebaseError} from "firebase/app";
@@ -51,55 +51,52 @@ import { FirebaseError} from "firebase/app";
     
 
 
+    const [account, setAccount] = useState(auth.currentUser);
+    const [isSaving, setIsSaving] = useState(false);
+    const saving = useRef(false);
+    useEffect(() => onAuthStateChanged(auth, setAccount), []);
+
     async function handleSubmit() {
-      console.log("pressed");
-     try{
-      
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      if(result.user.email === null){
-        return
+      if (saving.current) return;
+      if (!username.trim()) {
+        Alert.alert("Enter a username");
+        return;
       }
-      const userDoc = doc(db, "user", result.user.uid); //createes locatoin in database
-      
-     const userData:User = { // give data the userobj type
-        email: result.user.email,
-        uid: result.user.uid,
-        username: username
-      }
-      await setDoc(userDoc,userData);//gives doc location and data
-      Alert.alert("Account created!");
-      
-
-     
-     }catch(error){
-     console.log(error)
-     if(error instanceof FirebaseError){
-        switch(error.code){
-          case "auth/email-already-in-use":
-            Alert.alert("Email already in use");
-            break;
-          case "auth/weak-password":
-            Alert.alert("Weak password");
-            break;
-          default:
-            Alert.alert("Failed to create account")
+      saving.current = true;
+      setIsSaving(true);
+      try {
+        // Retry profile setup without creating another account.
+        const user = auth.currentUser ??
+          (await createUserWithEmailAndPassword(auth, email.trim(), password)).user;
+        setAccount(user);
+        if (!user.email) throw new Error("This account has no email address.");
+        const userData: User = {
+          email: user.email,
+          uid: user.uid,
+          username: username.trim(),
+        };
+        await setDoc(doc(db, "user", user.uid), userData, { merge: true });
+        Alert.alert("Profile saved!");
+      } catch (error) {
+        if (auth.currentUser) {
+          Alert.alert("Profile not saved", "Your account exists. Retry saving your profile.");
+        } else if (error instanceof FirebaseError && error.code === "auth/email-already-in-use") {
+          Alert.alert("Email already in use", "Log in to finish setting up your profile.");
+        } else if (error instanceof FirebaseError && error.code === "auth/weak-password") {
+          Alert.alert("Weak password");
+        } else {
+          Alert.alert("Could not create account", "Please try again.");
         }
-
-
+      } finally {
+        saving.current = false;
+        setIsSaving(false);
       }
-      else{
-          console.log(error);
-          Alert.alert("Failed to create account");
-
-        }
     }
-
-    }
-
-
 
     return(
         <View style = {styles.view}>
+        {account && <Text>Finish setting up your profile</Text>}
+        {!account && <>
         <View style = {styles.fieldRow}>
         <Text style = {styles.label}>Email</Text>
         <TextInput style = {styles.input} 
@@ -119,6 +116,7 @@ import { FirebaseError} from "firebase/app";
         secureTextEntry
         />
       </View>
+      </>}
       <View style = {styles.fieldRow}>
       <Text style = {styles.label}>username</Text>
       <TextInput style = {styles.input}
@@ -130,13 +128,16 @@ import { FirebaseError} from "firebase/app";
 
       <View style = {styles.fieldRow}>
 
-      <Pressable onPress={handleSubmit}
+      <Pressable disabled={isSaving} onPress={handleSubmit}
       style={{
       padding: 20,
       backgroundColor: "red",
       }}>
-        <Text>Sign Up</Text>
+        <Text>{isSaving ? "Saving..." : account ? "Save profile" : "Sign Up"}</Text>
       </Pressable>
+      {account && <Pressable disabled={isSaving} onPress={() => {
+        signOut(auth).catch(() => Alert.alert("Could not sign out", "Please try again."));
+      }}><Text>Sign out</Text></Pressable>}
       
       </View>
       </View>

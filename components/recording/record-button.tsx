@@ -8,13 +8,13 @@ export function RecordButton(){
     
     const { isRecording,startRecording,stopRecording,recordingAudio,
          replayRecording, submitRecording,audioStatus,transcriptText,
-         isSubmitted } = useAudioRecording();
+         isSubmitted, submissionStatus, submissionError, fillerResults } = useAudioRecording();
         
         // console.log("render:", recordingAudio)
     
     return(
         <View>
-        <Pressable onPress ={isRecording?stopRecording:startRecording}>
+        <Pressable disabled={submissionStatus === "submitting"} onPress ={isRecording?stopRecording:startRecording}>
         <Text>Record</Text>
         {isRecording && <Text>Recording...</Text>}
          </Pressable>
@@ -23,10 +23,23 @@ export function RecordButton(){
             {audioStatus.playing && <Text>Replaying...</Text>}
 
          </Pressable>
-         <Pressable onPress={submitRecording}>
-            <Text>Submit</Text>
-            {isSubmitted && <Text selectable style = {{fontSize: 16}}>{transcriptText?.text}</Text>}
+         {/* Submit only when the recording is ready. */}
+         <Pressable
+            onPress={submitRecording}
+            disabled={!recordingAudio || isRecording || submissionStatus === "submitting"}
+         >
+            <Text>{submissionStatus === "submitting" ? "Submitting..." : submissionStatus === "error" ? "Retry" : "Submit"}</Text>
          </Pressable>
+         {submissionError && <Text accessibilityRole="alert">{submissionError}</Text>}
+         {/* Show the saved analysis results. */}
+         {isSubmitted && (
+            <View>
+               <Text selectable style={{fontSize: 16}}>{transcriptText?.text}</Text>
+               {fillerResults && (
+                  <Text>Filler words detected: {Array.from(fillerResults.values()).reduce((total, occurrences) => total + occurrences.length, 0)}</Text>
+               )}
+            </View>
+         )}
          
     </View>
     )
