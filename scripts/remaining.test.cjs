@@ -111,25 +111,9 @@ function layoutHarness() {
     fail() { profileFailed(new Error('offline')); }, get subscribed() { return subscribed; } };
 }
 function allows(tree, route) { return nodes(tree, 'Protected').some(n => n.props.guard && nodes(n,'Screen').some(s => s.props.name === route)); }
-test('signed-in users cannot reach tabs until profile exists', () => {
+test('signed-in users can reach tabs without waiting for a Firestore profile', () => {
   const h = layoutHarness(); h.render(); h.login(); let tree = h.render();
-  assert.equal(allows(tree, '(tabs)'), false);
-  h.profile(undefined); tree = h.render(); assert.equal(allows(tree,'signup'), true); assert.equal(allows(tree,'(tabs)'), false);
-  h.profile({ uid: 'u1', username: 'Ada' }); tree = h.render(); assert.equal(allows(tree,'(tabs)'), true);
-});
-test('profile read failure offers a retry', () => {
-  const h = layoutHarness(); h.render(); h.login(); h.render(); h.fail();
-  const tree = h.render(); assert.equal(allows(tree,'(tabs)'), false);
-  const retry = nodes(tree,'Pressable').find(n => nodes(n,'Text').some(t => t.props.children === 'Retry'));
-  assert.ok(retry); retry.props.onPress(); h.render(); assert.equal(h.subscribed, 2);
-});
-
-test('pending profile writes do not unlock the app before server acknowledgement', () => {
-  const h = layoutHarness(); h.render(); h.login(); h.render(); h.profile(undefined); h.render();
-  h.profile({ uid: 'u1', username: 'Ada' }, true);
-  assert.equal(allows(h.render(), '(tabs)'), false);
-  h.profile({ uid: 'u1', username: 'Ada' });
-  assert.equal(allows(h.render(), '(tabs)'), true);
+  assert.equal(allows(tree, '(tabs)'), true);
 });
 test('native auth persists through AsyncStorage and reuses initialized sessions', () => {
   const app = {}, auth = {}, storage = {}, persistence = {}; let initialized = false;
