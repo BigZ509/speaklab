@@ -79,6 +79,28 @@
   could not bind localhost (Chrome received `ERR_CONNECTION_REFUSED`).
   Therefore no screenshot or visual inspection is claimed from this preview.
 
+## Native simulator retry
+
+- Elevated `xcrun simctl list devices booted` verified iPhone 17, iOS 26.5
+  (`2A06F270-C9C4-4A16-B067-B5D5B67A4A6F`) is booted.
+- Expo launched the feature-worktree bundle on port 8082 and a direct
+  `exp://192.168.1.28:8082/--/week1-preview` link reached the fixture screen.
+- The preview’s accessible content confirms the development label, static
+  prompt, and all fixture-state controls. However an Expo red error overlay
+  from the existing `auth/invalid-api-key` configuration is rendered above it,
+  repeatedly originating from `app/(tabs)/signup.tsx` importing Firebase.
+- No screenshot evidence is claimed as a clean visual QA artifact because the
+  overlay obstructs the fixture UI. Firebase configuration was not changed.
+
+## SpeakLab 2.0 research sprint
+
+- Completed three Mobbin research batches: speech/practice, consumer
+  composition, and minimal expressive recording interfaces.
+- Inspected and documented 16 verified iOS screen references across 15 apps
+  (some references were previously verified in this Week 1 thread).
+- Research-only stopping point reached: no additional application changes are
+  authorized until the Phase 5 design-synthesis review.
+
 ## Initial repository condition
 
 - Expo Router application with authentication routes, tab navigation, login
