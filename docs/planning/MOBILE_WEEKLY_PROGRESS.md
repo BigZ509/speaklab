@@ -47,6 +47,23 @@
   submission tests pass. Rendered iOS inspection remains required before the
   Week 1 completion claim.
 
+## Visual QA attempt — blocked
+
+- 2026-10-31: `xcrun simctl list devices available` failed because
+  CoreSimulatorService/simdiskimaged was unavailable (`Connection refused`,
+  no simulator device set). No iOS simulator screenshots can be claimed.
+- Web fallback reached the actual Expo app at `http://localhost:8081/login`,
+  but the authenticated Practice route is correctly guarded. No test account
+  or safe fixture-login path is available, so recording/result screens cannot
+  be inspected without credentials or an auth-bypass change (out of scope).
+- Strongest non-device verification completed: TypeScript no-emit check; Expo
+  lint with zero errors; 26 Node tests including recording submission,
+  duplicate-submit protection, deterministic filler totals, and transcript
+  selection rendering.
+- Remaining acceptance evidence: authenticated iOS rendering at compact and
+  large device sizes; live microphone/playback interaction; live Railway
+  transcription validation. The last item is explicitly unverified.
+
 ## Initial repository condition
 
 - Expo Router application with authentication routes, tab navigation, login
