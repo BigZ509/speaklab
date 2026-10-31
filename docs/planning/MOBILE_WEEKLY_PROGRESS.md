@@ -92,6 +92,22 @@
 - No screenshot evidence is claimed as a clean visual QA artifact because the
   overlay obstructs the fixture UI. Firebase configuration was not changed.
 
+## Editorial implementation visual QA
+
+- Native iPhone 17 preview was reopened successfully via the development-only
+  route. The actual fixture idle and results screens were inspected.
+- Findings: safe-area spacing clears the Dynamic Island; serif headings create
+  a distinct editorial hierarchy; the prompt card reads as a coherent surface;
+  filler breakdown retains factual counts; transcript remains the dominant
+  result artifact. Preview-state selector and fixture label are development
+  tooling, not production UI.
+- Screenshots: `docs/design/explorations/native-preview-idle-after.png` and
+  `docs/design/explorations/native-preview-results-after.png`. The idle
+  capture was taken while Expo Go was opening and is not accepted as final
+  UI evidence; the results capture is a valid fixture-only native render.
+- Validation after editorial refinement: TypeScript no-emit passed, Expo lint
+  passed with zero errors, and 28 Node tests passed.
+
 ## SpeakLab 2.0 research sprint
 
 - Completed three Mobbin research batches: speech/practice, consumer

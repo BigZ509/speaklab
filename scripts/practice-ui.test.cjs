@@ -46,6 +46,7 @@ test('feedback and transcript components expose deterministic, readable result c
   const feedback = FeedbackSummary({ fillerResults: new Map([['um', [{}]]]) });
   const transcript = TranscriptPanel({ transcript: 'A readable response.' });
   assert.match(nodes(feedback, 'Text').map(n => n.props.children).join(' '), /1 filler word detected/i);
+  assert.match(nodes(feedback, 'Text').map(n => n.props.children).join(' '), /um.*1/i);
   assert.equal(nodes(transcript, 'Text').some(n => n.props.selectable), true);
 });
 
