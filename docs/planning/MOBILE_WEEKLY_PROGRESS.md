@@ -138,6 +138,48 @@
   fixture preview intentionally cannot exercise them and must not be used as
   evidence that they work.
 
+## Week 1 visual-fidelity recovery — iPhone 17 (2026-10-31)
+
+- Visual-fidelity audit: `docs/design/VISUAL_FIDELITY_AUDIT.md`. It compares
+  the inspected Editorial and Recording Instrument concept files against the
+  prior native capture, identifies composition as the primary issue, and
+  excludes unsupported reference affordances such as pause, add time,
+  alternate prompts, and generic coaching.
+- Recovery implementation: a 56px tabular timer and 128px cobalt recorder are
+  composed as one stage with three state-distinct concentric rings. The ring
+  pulse is state-only (not audio-reactive) and is disabled when reduced motion
+  is enabled. Prompt, review, results header, factual filler summary, and
+  bounded selectable transcript surfaces now use the same editorial rules,
+  spacing, geometry, and cobalt accent.
+- Development preview separation: `/week1-preview?state=<fixture>` is a
+  development-only, control-free screenshot mode. It remains labelled
+  `DEVELOPMENT PREVIEW · FIXTURES ONLY`; the unparameterized route retains
+  the state selector. Fixtures never invoke Firebase, the recording hook, or
+  Railway, and `__DEV__` still redirects in production.
+- Native, settled, control-free fixture captures from the booted iPhone 17
+  iOS 26.5 simulator are saved as `native-recovery-idle.png`,
+  `native-recovery-recording.png`, `native-recovery-recorded.png`,
+  `native-recovery-processing.png`, `native-recovery-results.png`,
+  `native-recovery-error.png`, and `native-recovery-permission.png` under
+  `docs/design/explorations/`. Each is 1206×2622.
+- Before saving, the Simulator accessibility tree was checked for expected
+  SpeakLab fixture content rather than an Expo loading screen or error overlay.
+  Recording and results inspection confirmed Dynamic Island clearance, visible
+  ring contrast, a central timer/control stage, and readable actual transcript
+  and factual filler content.
+- Actual-image comparison boards are `recording-fidelity-comparison.svg` and
+  `results-fidelity-comparison.svg`, arranged as Reference concept | Previous
+  native | Updated native. They link only inspected reference PNGs and real
+  Simulator PNGs; no generated image is represented as a native capture.
+- A second-size attempt used the available iPhone 17e (1170×2532). It booted,
+  but opening the Expo deep link failed with
+  `LSApplicationWorkspaceErrorDomain` code `115` because the device has no
+  `exp://` handler. Installing Expo Go or a development build is outside this
+  Week 1 authorization, so no 17e application screenshot is claimed.
+- Remaining unverified integrations are unchanged: live microphone permission
+  and capture, native playback, and a successful Railway transcription request
+  were not exercised by fixture rendering.
+
 ## SpeakLab 2.0 research sprint
 
 - Completed three Mobbin research batches: speech/practice, consumer

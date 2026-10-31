@@ -2,7 +2,7 @@
 
 ## Status
 
-Week 1 proposal, pending final screen-design approval. The selected visual
+Approved Week 1 implementation. The selected visual
 direction is **Focused Practice Studio**: calm, focused iOS practice with a
 warm off-white surface, readable hierarchy, and a restrained cobalt/indigo
 accent. It is informed by verified Mobbin research recorded in
@@ -47,7 +47,8 @@ accessible announcements accompany all status changes.
 
 ### Typography, spacing, and shape
 
-- `display`: 32px / 38px / 700 for the one page-level focus heading.
+- `display`: native Georgia 34px / 40px / 400 for the one page-level focus
+  heading; this deliberate serif use is limited to editorial headings.
 - `title`: 24px / 30px / 700 for screen and result-section headings.
 - `body`: 17px / 25px / 400 for prompts and transcripts; this deliberately
   exceeds the existing 16px body for long-form readability.
@@ -58,6 +59,10 @@ accessible announcements accompany all status changes.
   for circular record controls and status pills.
 - Elevation: none by default. A 1px subtle border defines cards so hierarchy
   remains clear without decorative shadows.
+- Recording instrument: real elapsed time is Georgia 56px / 64px with tabular
+  figures; the primary 128px cobalt control sits within three restrained blue
+  rings. Only a non-audio state pulse is used while recording, and it stops
+  when reduced motion is enabled.
 
 ### Reusable Week 1 components
 
@@ -91,9 +96,9 @@ accessible announcements accompany all status changes.
 - Idle, recording, review-ready, submitting, success, retryable submission
   error, microphone permission denied, and empty transcript response all
   receive explicit copy and a recoverable next action.
-- Recording uses a gentle, nonessential waveform/record-indicator animation;
-  it respects reduced-motion preferences. Submission uses an inline progress
-  indicator instead of a blocking modal.
+- Recording uses a gentle, non-audio concentric-ring state pulse; it respects
+  reduced-motion preferences. Submission uses an inline progress indicator
+  instead of a blocking modal.
 - No chart is in scope for Week 1. Longitudinal performance metrics are
   deferred until genuine historical data is available.
 

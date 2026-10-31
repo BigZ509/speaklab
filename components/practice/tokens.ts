@@ -15,11 +15,13 @@ export const practiceTokens = {
   },
   spacing: { xxs: 4, xs: 8, sm: 12, md: 16, lg: 24, xl: 32, xxl: 40 },
   radius: { card: 12, prompt: 16, pill: 999 },
+  recording: { controlSize: 128, stageSize: 244, timerSize: 56 },
   type: {
     display: { fontSize: 34, lineHeight: 40, fontWeight: '400' as const, fontFamily: 'Georgia' },
     title: { fontSize: 24, lineHeight: 30, fontWeight: '400' as const, fontFamily: 'Georgia' },
     body: { fontSize: 17, lineHeight: 25, fontWeight: '400' as const },
     label: { fontSize: 14, lineHeight: 20, fontWeight: '600' as const },
+    timer: { fontSize: 56, lineHeight: 64, fontWeight: '400' as const, fontFamily: 'Georgia' },
   },
 } as const;
 

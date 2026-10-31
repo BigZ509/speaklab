@@ -55,10 +55,36 @@ test('development preview route is guarded from production builds', () => {
   assert.match(source, /__DEV__/);
   assert.match(source, /Redirect/);
   assert.match(source, /DEVELOPMENT PREVIEW/);
+  assert.match(source, /useLocalSearchParams/);
+  assert.match(source, /presentationMode/);
+  assert.match(source, /!presentationMode/);
 });
 
-test('recording control exposes a readable elapsed duration while recording', () => {
+test('recording control makes elapsed time and the recording instrument explicit', () => {
   const source = fs.readFileSync(path.join(root, 'components/practice/recording-control.tsx'), 'utf8');
+  const tokenSource = fs.readFileSync(path.join(root, 'components/practice/tokens.ts'), 'utf8');
   assert.match(source, /elapsedSeconds/);
   assert.match(source, /Recording time/);
+  assert.match(source, /fontVariant:\s*\['tabular-nums'\]/);
+  assert.match(tokenSource, /timerSize:\s*56/);
+  assert.match(tokenSource, /controlSize:\s*128/);
+  assert.match(source, /ring/);
+  assert.match(source, /outerActive/);
+  assert.match(source, /middleActive/);
+  assert.match(source, /innerActive/);
+  assert.match(source, /AccessibilityInfo/);
+  assert.match(source, /reduceMotion/);
+});
+
+test('editorial review keeps factual feedback secondary to a bounded readable transcript', () => {
+  const recordScreen = fs.readFileSync(path.join(root, 'components/recording/record-button.tsx'), 'utf8');
+  const prompt = fs.readFileSync(path.join(root, 'components/practice/practice-prompt-card.tsx'), 'utf8');
+  const feedback = fs.readFileSync(path.join(root, 'components/practice/feedback-summary.tsx'), 'utf8');
+  const transcript = fs.readFileSync(path.join(root, 'components/practice/transcript-panel.tsx'), 'utf8');
+  assert.match(recordScreen, /ResultsHeader/);
+  assert.match(prompt, /editorialRule/);
+  assert.match(feedback, /summaryRule/);
+  assert.match(transcript, /ScrollView/);
+  assert.match(transcript, /maxHeight/);
+  assert.match(transcript, /selectable/);
 });
