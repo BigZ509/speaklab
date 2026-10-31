@@ -108,6 +108,36 @@
 - Validation after editorial refinement: TypeScript no-emit passed, Expo lint
   passed with zero errors, and 28 Node tests passed.
 
+## Final native verification — iPhone 17 (2026-10-31)
+
+- Relaunched the development-only preview from this feature worktree on the
+  booted iPhone 17 simulator (iOS 26.5) and waited until the Expo opening
+  transition had cleared before each capture.
+- Valid, settled SpeakLab fixture captures are saved as:
+  - `docs/design/explorations/native-preview-idle-final.png`
+  - `docs/design/explorations/native-preview-recording-final.png`
+  - `docs/design/explorations/native-preview-recorded-final.png`
+  - `docs/design/explorations/native-preview-results-final.png`
+- Each capture visibly contains the `DEVELOPMENT PREVIEW · FIXTURES ONLY`
+  label and the SpeakLab practice surface; none is an Expo loading screen or
+  error overlay. These are fixture demonstrations, not live backend results.
+- Visual inspection findings: the content clears the Dynamic Island; cards,
+  controls, and primary action remain inside the viewport; serif display text
+  is consistent across practice and review; and transcript and filler content
+  remain readable. The state-picker chips are intentionally isolated to the
+  development preview and are not part of the production practice experience.
+- No genuine visual or functional defect was found in this final pass, so no
+  production UI change was made.
+- The preview remains development-only: `app/week1-preview.tsx` returns a
+  `Redirect` before rendering fixtures when `__DEV__` is false. Its existing
+  regression test covers the explicit guard. A fresh `NODE_ENV=production`
+  iOS Expo export completed successfully; its generated output contains no
+  `DEVELOPMENT PREVIEW` or `FIXTURES ONLY` fixture label.
+- Deferred live verification: microphone permission/capture, native playback,
+  and a successful Railway transcription request remain unverified. The
+  fixture preview intentionally cannot exercise them and must not be used as
+  evidence that they work.
+
 ## SpeakLab 2.0 research sprint
 
 - Completed three Mobbin research batches: speech/practice, consumer
