@@ -1,4 +1,4 @@
-export type FillerResults = ReadonlyMap<string, ReadonlyArray<unknown>>;
+export type FillerResults = ReadonlyMap<string, readonly unknown[]>;
 
 export function countFillerOccurrences(fillerResults: FillerResults | null | undefined): number {
   if (!fillerResults) return 0;

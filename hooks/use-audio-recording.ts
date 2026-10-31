@@ -20,6 +20,7 @@ export default function useAudioRecording() {
   const recorderState = useAudioRecorderState(audioRecorder);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingAudio, setRecordingAudio] = useState<string | null>(null);
+  const [hasMicrophonePermission, setHasMicrophonePermission] = useState<boolean | null>(null);
   
 
   const player = useAudioPlayer(recordingAudio);
@@ -39,6 +40,7 @@ export default function useAudioRecording() {
     // Keep the recording stable during submission.
     if (submissionInFlight.current) return;
     try {
+      if (hasMicrophonePermission === false) return;
       setRecordingAudio(null);
       setTranscriptText(null);
       setFillerResults(null);
@@ -71,6 +73,7 @@ export default function useAudioRecording() {
   useEffect(() => {
     (async () => {
       const status = await AudioModule.requestRecordingPermissionsAsync();
+      setHasMicrophonePermission(status.granted);
       if (!status.granted) {
         Alert.alert("Permission to access microphone was denied");
       }
@@ -131,6 +134,7 @@ export default function useAudioRecording() {
     submissionStatus,
     submissionError,
     fillerResults,
+    hasMicrophonePermission,
     
   };
 }
