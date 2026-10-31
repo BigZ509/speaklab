@@ -55,3 +55,9 @@ test('development preview route is guarded from production builds', () => {
   assert.match(source, /Redirect/);
   assert.match(source, /DEVELOPMENT PREVIEW/);
 });
+
+test('recording control exposes a readable elapsed duration while recording', () => {
+  const source = fs.readFileSync(path.join(root, 'components/practice/recording-control.tsx'), 'utf8');
+  assert.match(source, /elapsedSeconds/);
+  assert.match(source, /Recording time/);
+});
