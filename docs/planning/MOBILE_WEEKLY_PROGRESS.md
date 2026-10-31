@@ -64,6 +64,21 @@
   large device sizes; live microphone/playback interaction; live Railway
   transcription validation. The last item is explicitly unverified.
 
+## Development-only preview
+
+- Added `app/week1-preview.tsx`, protected by `__DEV__` and redirecting to
+  `/login` in production builds. It never invokes Firebase, the recording
+  hook, or the Railway backend.
+- The route labels itself `DEVELOPMENT PREVIEW · FIXTURES ONLY` and provides
+  deterministic idle, recording, recorded, processing, results, empty,
+  error, and permission-denied states.
+- Route guard is regression-tested. TypeScript and 27 Node tests pass; Expo
+  lint passes with zero errors.
+- Web screenshot attempt remains blocked: this command environment terminates
+  Expo dev-server processes after a command returns, and a detached attempt
+  could not bind localhost (Chrome received `ERR_CONNECTION_REFUSED`).
+  Therefore no screenshot or visual inspection is claimed from this preview.
+
 ## Initial repository condition
 
 - Expo Router application with authentication routes, tab navigation, login
