@@ -48,3 +48,10 @@ test('feedback and transcript components expose deterministic, readable result c
   assert.match(nodes(feedback, 'Text').map(n => n.props.children).join(' '), /1 filler word detected/i);
   assert.equal(nodes(transcript, 'Text').some(n => n.props.selectable), true);
 });
+
+test('development preview route is guarded from production builds', () => {
+  const source = fs.readFileSync(path.join(root, 'app/week1-preview.tsx'), 'utf8');
+  assert.match(source, /__DEV__/);
+  assert.match(source, /Redirect/);
+  assert.match(source, /DEVELOPMENT PREVIEW/);
+});
