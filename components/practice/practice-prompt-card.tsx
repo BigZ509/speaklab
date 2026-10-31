@@ -1,17 +1,50 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { practiceSharedStyles, practiceTokens } from './tokens';
+import { practiceTokens as t } from './tokens';
+
 export const PRACTICE_PROMPT = 'Tell me about a time you had to explain a complex idea clearly.';
+
 export function PracticePromptCard() {
-  return <View style={[practiceSharedStyles.card, styles.card]}>
-    <View style={styles.editorialRule} />
-    <Text style={practiceSharedStyles.label}>TODAY’S PROMPT</Text>
-    <Text style={styles.prompt}>{PRACTICE_PROMPT}</Text>
-    <Text style={styles.hint}>Take a moment to organize your answer, then record when you’re ready.</Text>
+  return <View style={styles.card}>
+    <View style={styles.header}>
+      <View style={styles.editorialRule} />
+      <Text style={styles.label}>{"TODAY\u2019S PROMPT"}</Text>
+    </View>
+    <Text accessibilityRole="header" style={styles.prompt}>{PRACTICE_PROMPT}</Text>
   </View>;
 }
+
 const styles = StyleSheet.create({
-  card: { padding: practiceTokens.spacing.lg, borderRadius: practiceTokens.radius.prompt, borderColor: '#E7E2D8' },
-  editorialRule: { backgroundColor: practiceTokens.color.primary, height: 3, marginBottom: practiceTokens.spacing.md, width: 32 },
-  prompt: { color: practiceTokens.color.text, marginTop: practiceTokens.spacing.sm, ...practiceTokens.type.title },
-  hint: { color: practiceTokens.color.textSecondary, marginTop: practiceTokens.spacing.md, ...practiceTokens.type.body },
+  card: {
+    backgroundColor: t.recording.promptSurface,
+    borderColor: t.recording.promptBorder,
+    borderRadius: t.radius.prompt,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: t.spacing.md,
+    paddingVertical: t.spacing.sm,
+    marginHorizontal: t.spacing.xs,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  editorialRule: {
+    backgroundColor: t.recording.cobalt,
+    height: 2,
+    width: 16,
+  },
+  label: {
+    color: t.color.textSecondary,
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 1.8,
+  },
+  prompt: {
+    color: t.color.text,
+    fontFamily: 'Georgia',
+    fontSize: 18,
+    fontWeight: '400',
+    lineHeight: 24,
+    marginTop: 6,
+  },
 });

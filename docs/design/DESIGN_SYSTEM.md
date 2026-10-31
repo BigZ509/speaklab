@@ -108,3 +108,16 @@ These components and tokens serve the authenticated practice tab only in
 Week 1. Question selection, interview simulations, scoring, trend charts,
 generated coaching, new backend contracts, and speech-engine changes are
 explicitly deferred.
+
+### Recording composition recovery — 2026-10-31
+
+The Week 1 recorder uses the scoped `practiceTokens.recording` palette and
+geometry: cobalt `#074BEE`, three rings at 340/268/210px, and a 164px central
+action. The stage scales down with viewport width. The large native iOS Didot
+timer is 128px/136px with tabular numeric styling; its font does not scale
+beyond this display size, avoiding inflated line boxes at accessibility sizes.
+Supporting labels and the Georgia prompt continue to scale and the scroll
+container keeps controls reachable. Active state uses a square Stop glyph,
+explicit action text, and a recording label. Idle uses a microphone glyph.
+The state pulse respects reduced motion and represents recording state only.
+These recording-specific decisions do not change result-screen typography.

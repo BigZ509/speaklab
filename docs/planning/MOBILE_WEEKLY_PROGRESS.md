@@ -213,3 +213,46 @@
 Record approved scope, references, selected direction, planned tasks,
 implementation and iteration evidence, files changed, visual inspection,
 tests, blockers, review questions, and deferred work.
+
+## Recording Composition Recovery — final verification (2026-10-31)
+
+- Scope: Week 1 recording presentation only, on the existing isolated
+  `feat/week1-focused-practice-studio` worktree. No results-screen, backend,
+  authentication, speech-engine, or navigation changes in this recovery.
+- The live recorder and development preview share `PracticeSession`, the compact
+  serif prompt, and `RecordingControl`. The timer uses native iOS Didot at
+  128px/136px; concentric rings are 340/268/210px around a 164px cobalt action.
+  The timer remains display-sized at large accessibility settings while labels
+  and prompt text scale. Status text can wrap. Motion starts conservatively
+  and follows the system reduced-motion preference.
+- Fresh final native capture: `docs/design/explorations/native-fixture-recording-final.png`,
+  captured from the fully loaded iPhone 17 (iOS 26.5) after restarting Expo Go.
+  The development-only URL is `/week1-preview?state=recording&capture=1`.
+  Fixture controls and banner are absent in this explicitly requested capture
+  mode; the ordinary preview retains its developer controls and production
+  continues to redirect before rendering fixtures.
+- Visually compared the final capture with `instrument-recording.png`.
+  The large high-contrast timer, cobalt center, three ring layers, restrained
+  context label, and open recording stage retain the approved direction.
+  Remaining deliberate differences: the real practice question appears above
+  the timer, a square Stop action replaces the concept's microphone while
+  recording, and unsupported Pause/Add time controls are omitted. The native
+  canvas is warm off-white rather than the concept's gray field.
+- Earlier actual native refinement captures remain available as
+  `native-fixture-recording-pass1.png` and `native-fixture-recording-pass2.png`.
+  The refreshed `recording-composition-comparison.png` contains the supplied
+  concept phone region, old native capture, and final native capture with
+  original aspect ratios. `recording-before-after.html` embeds both native
+  images for standalone viewing.
+- Fresh verification: `npx tsc --noEmit` exited 0; `npm run lint` exited 0;
+  `node --test scripts/submission.test.cjs scripts/remaining.test.cjs scripts/practice-ui.test.cjs`
+  passed 34/34 tests with zero failures. Tests include timer minute boundaries,
+  start/stop callbacks, reduced-motion preference changes, clean preview
+  transition, production preview redirect, and existing submission regressions.
+- Existing production iOS export completed successfully and contained zero
+  development fixture-label/error-marker matches. Final continuation made no
+  product code changes after the fresh verification.
+- Evidence limit: native fixtures prove presentation and fixture transitions.
+  Live microphone permission/capture/playback and a successful Railway request
+  remain unverified. There is no remaining blocker to reviewing the recording
+  screen's visual composition.
