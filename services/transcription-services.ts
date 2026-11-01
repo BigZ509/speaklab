@@ -1,13 +1,14 @@
+import { File } from 'expo-file-system';
 import { TranscriptResults } from "@/scripts/types/types";
 export async function transcribeAudio(
   recordingAudio: string,
 ): Promise<TranscriptResults> {
   const formData = new FormData();
-  formData.append("audio", {
-    uri: recordingAudio,
-    name: "recording.m4a",
-    type: "audio/m4a",
-  } as any);
+  // SDK 58 uses standard FormData; native URI descriptor objects are unsupported.
+  const audio = recordingAudio.startsWith('blob:')
+    ? await (await fetch(recordingAudio)).blob()
+    : new File(recordingAudio);
+  formData.append('audio', audio, 'recording.m4a');
 
   const response = await fetch(
     "https://speaklab-backend-production.up.railway.app/transcribe",

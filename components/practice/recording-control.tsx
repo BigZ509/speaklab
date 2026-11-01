@@ -1,5 +1,5 @@
 import { AccessibilityInfo, Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { practiceTokens as t } from './tokens';
 
 export function RecordingControl({ isRecording, elapsedSeconds = 0, onPress }: {
@@ -7,7 +7,7 @@ export function RecordingControl({ isRecording, elapsedSeconds = 0, onPress }: {
   elapsedSeconds?: number;
   onPress: () => void;
 }) {
-  const pulse = useRef(new Animated.Value(1)).current;
+  const [pulse] = useState(() => new Animated.Value(1));
   // Stay still until the asynchronous system preference is known.
   const [reduceMotion, setReduceMotion] = useState(true);
   const { width } = useWindowDimensions();

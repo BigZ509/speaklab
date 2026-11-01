@@ -9,7 +9,6 @@ import {
   useAudioRecorder,
   useAudioRecorderState,
 } from "expo-audio";
-import { Audio } from 'expo-av';
 import { useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { fillerAnalyzer } from "@/speechEngine/fillers";

@@ -25,10 +25,46 @@ const transcript = { text: 'um hello', words: [
   { word: 'um', start: 0, end: 0.3 }, { word: 'hello', start: 0.4, end: 1 },
 ] };
 function service(response) {
-  return load('services/transcription-services.ts', {}, {
-    FormData: class { append() {} }, fetch: async () => response,
+  return load('services/transcription-services.ts', { 'expo-file-system': { File: class extends Blob { constructor() { super(['audio']); } } } }, {
+    Blob, FormData: class { append() {} }, fetch: async () => response,
   }).transcribeAudio;
 }
+test('uploads recording bytes as a standard multipart file with the existing backend contract', async () => {
+  const bytes = new Uint8Array([1, 2, 3, 4]);
+  const transcribe = load('services/transcription-services.ts', {
+    'expo-file-system': { File: class extends Blob { constructor(uri) { assert.equal(uri, 'file:///recording.m4a'); super([bytes], { type: 'audio/mp4' }); } slice() { throw new Error('Native File.slice relies on unsupported React Native typed-array blobs'); } } },
+  }, {
+    Blob, FormData,
+    fetch: async (url, options) => {
+      assert.equal(url, 'https://speaklab-backend-production.up.railway.app/transcribe');
+      assert.equal(options.method, 'POST');
+      const audio = options.body.get('audio');
+      assert.ok(audio instanceof Blob);
+      assert.equal(audio.name, 'recording.m4a');
+      assert.equal(audio.type, 'audio/mp4');
+      assert.deepEqual(new Uint8Array(await audio.arrayBuffer()), bytes);
+      return { ok: true, json: async () => transcript };
+    },
+  }).transcribeAudio;
+  assert.equal(await transcribe('file:///recording.m4a'), transcript);
+});
+
+test('uploads a browser recording blob without invoking the native file API', async () => {
+  const recording = new Blob(['browser audio'], { type: 'audio/webm' });
+  const transcribe = load('services/transcription-services.ts', {
+    'expo-file-system': { File: class { constructor() { throw new Error('Native file API used for a browser recording'); } } },
+  }, {
+    Blob, FormData,
+    fetch: async (url, options) => {
+      if (url === 'blob:recording') return { blob: async () => recording };
+      assert.equal(options.body.get('audio').name, 'recording.m4a');
+      assert.equal(await options.body.get('audio').text(), 'browser audio');
+      return { ok: true, json: async () => transcript };
+    },
+  }).transcribeAudio;
+  assert.equal(await transcribe('blob:recording'), transcript);
+});
+
 test('returns a valid transcript', async () => {
   assert.equal(await service({ ok: true, json: async () => transcript })('recording'), transcript);
 });
@@ -58,7 +94,7 @@ function hookHarness(transcribeAudio) {
   const analyzer = load('speechEngine/fillers.ts', { react });
   const useHook = load('hooks/use-audio-recording.ts', {
     react, 'react-native': { Alert: { alert() {} } },
-    'expo-av': {}, 'expo-audio': {
+    'expo-audio': {
       RecordingPresets: { HIGH_QUALITY: {} }, useAudioRecorder: () => recorder,
       useAudioRecorderState: () => ({}), useAudioPlayer: () => ({ play() {} }),
       useAudioPlayerStatus: () => ({ isLoaded: true }),

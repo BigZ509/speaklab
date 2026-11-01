@@ -1,5 +1,5 @@
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { FeedbackSummary } from '@/components/practice/feedback-summary';
 import { PracticeSession } from '@/components/practice/practice-session';
@@ -19,9 +19,11 @@ const isPreviewState = (value: string | string[] | undefined): value is PreviewS
 export default function Week1Preview() {
   const { state: requestedState, capture } = useLocalSearchParams<{ state?: string; capture?: string }>();
   const [selectedState, setSelectedState] = useState<PreviewState>(() => isPreviewState(requestedState) ? requestedState : 'idle');
-  useEffect(() => {
+  const [previousRequestedState, setPreviousRequestedState] = useState(requestedState);
+  if (requestedState !== previousRequestedState) {
+    setPreviousRequestedState(requestedState);
     if (isPreviewState(requestedState)) setSelectedState(requestedState);
-  }, [requestedState]);
+  }
   if (!__DEV__) return <Redirect href="/login" />;
   const presentationMode = isPreviewState(requestedState);
   const cleanCapture = presentationMode && capture === '1';
