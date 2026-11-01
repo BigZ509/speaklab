@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1500" viewBox="0 0 1800 1500">
+  <rect width="1800" height="1500" fill="#F8F6F1"/>
+  <style>text { font-family: -apple-system, Helvetica, Arial, sans-serif; fill: #17171C; } .k { font-size: 28px; font-weight: 700; letter-spacing: 2px; } .s { font-size: 21px; fill: #5B5B66; }</style>
+  <text class="k" x="60" y="70">REFERENCE CONCEPT</text><text class="s" x="60" y="105">Editorial results reading surface</text>
+  <text class="k" x="660" y="70">PREVIOUS NATIVE</text><text class="s" x="660" y="105">Week 1 capture before recovery</text>
+  <text class="k" x="1260" y="70">UPDATED NATIVE</text><text class="s" x="1260" y="105">Control-free development fixture</text>
+  <image href="editorial-results.png" x="60" y="150" width="500" height="500" preserveAspectRatio="xMidYMid meet"/>
+  <image href="native-preview-results-final.png" x="760" y="150" width="400" height="870" preserveAspectRatio="xMidYMid meet"/>
+  <image href="native-recovery-results.png" x="1360" y="150" width="400" height="870" preserveAspectRatio="xMidYMid meet"/>
+  <text class="s" x="60" y="1320">Reference informs editorial hierarchy; generic encouragement and alternate-prompt links are omitted.</text>
+  <text class="s" x="660" y="1320">Metric card and transcript share nearly equal visual weight.</text>
+  <text class="s" x="1260" y="1320">Editorial header, factual filler detail, and a bounded selectable transcript.</text>
+</svg>

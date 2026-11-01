@@ -1,0 +1,91 @@
+<div id="speaklab-week1-preview" aria-label="Focused Practice Studio Week 1 screen preview">
+  <style>
+    #speaklab-week1-preview { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; color: #17171c; }
+    #speaklab-week1-preview * { box-sizing: border-box; }
+    #speaklab-week1-preview .preview-switcher { display: flex; gap: 8px; justify-content: center; margin: 0 0 16px; flex-wrap: wrap; }
+    #speaklab-week1-preview .preview-switcher button { min-height: 40px; border: 1px solid #dedcd5; background: #fff; color: #3c3c45; border-radius: 999px; padding: 0 16px; font: 600 14px/20px inherit; }
+    #speaklab-week1-preview .preview-switcher button[aria-pressed="true"] { background: #3346b8; color: #fff; border-color: #3346b8; }
+    #speaklab-week1-preview .phone { width: min(100%, 348px); margin: 0 auto; background: #f8f6f1; border: 8px solid #17171c; border-radius: 38px; overflow: hidden; box-shadow: 0 18px 44px rgba(23,23,28,.20); }
+    #speaklab-week1-preview .island { width: 112px; height: 28px; background: #17171c; border-radius: 0 0 17px 17px; margin: 0 auto; }
+    #speaklab-week1-preview .screen { min-height: 638px; padding: 18px 20px 26px; display: flex; flex-direction: column; }
+    #speaklab-week1-preview .eyebrow { color: #5b5b66; font-size: 13px; font-weight: 650; letter-spacing: .02em; margin: 14px 0 6px; }
+    #speaklab-week1-preview h2 { font-size: 27px; line-height: 32px; letter-spacing: -.04em; margin: 0 0 20px; }
+    #speaklab-week1-preview .prompt, #speaklab-week1-preview .feedback, #speaklab-week1-preview .transcript { background: #fff; border: 1px solid #dedcd5; border-radius: 16px; padding: 17px; }
+    #speaklab-week1-preview .prompt-label, #speaklab-week1-preview .section-label { font-size: 13px; color: #5b5b66; font-weight: 650; margin-bottom: 8px; }
+    #speaklab-week1-preview .prompt p { font-size: 19px; line-height: 25px; font-weight: 700; margin: 0; letter-spacing: -.02em; }
+    #speaklab-week1-preview .hint { font-size: 14px; line-height: 20px; color: #5b5b66; margin: 12px 3px 0; }
+    #speaklab-week1-preview .record-region { margin-top: auto; text-align: center; padding: 28px 0 4px; }
+    #speaklab-week1-preview .timer { font-size: 15px; color: #5b5b66; font-variant-numeric: tabular-nums; margin-bottom: 14px; }
+    #speaklab-week1-preview .wave { height: 36px; display: flex; gap: 4px; align-items: center; justify-content: center; margin-bottom: 20px; }
+    #speaklab-week1-preview .wave span { display: block; width: 4px; background: #7884d7; border-radius: 3px; }
+    #speaklab-week1-preview .wave span:nth-child(1), #speaklab-week1-preview .wave span:nth-child(7) { height: 10px; }
+    #speaklab-week1-preview .wave span:nth-child(2), #speaklab-week1-preview .wave span:nth-child(6) { height: 20px; }
+    #speaklab-week1-preview .wave span:nth-child(3), #speaklab-week1-preview .wave span:nth-child(5) { height: 30px; }
+    #speaklab-week1-preview .wave span:nth-child(4) { height: 36px; background: #3346b8; }
+    #speaklab-week1-preview .record { width: 96px; height: 96px; border: 8px solid #dce0fb; border-radius: 50%; background: #3346b8; color: #fff; font: 700 15px/18px inherit; padding: 0 12px; }
+    #speaklab-week1-preview .record.stop { background: #17171c; border-color: #e4e3df; }
+    #speaklab-week1-preview .primary { width: 100%; min-height: 52px; border: 0; border-radius: 14px; background: #3346b8; color: #fff; font: 700 16px/20px inherit; margin-top: 16px; }
+    #speaklab-week1-preview .secondary { display: inline-block; border: 0; background: transparent; color: #3346b8; font: 650 15px/20px inherit; padding: 13px 10px; }
+    #speaklab-week1-preview .metric { font-size: 28px; font-weight: 750; letter-spacing: -.04em; margin: 3px 0 5px; }
+    #speaklab-week1-preview .feedback { border-left: 4px solid #3346b8; margin-bottom: 16px; }
+    #speaklab-week1-preview .feedback p, #speaklab-week1-preview .transcript p { font-size: 16px; line-height: 24px; margin: 0; }
+    #speaklab-week1-preview .transcript { flex: 1; }
+    #speaklab-week1-preview .transcript p { color: #383841; }
+    #speaklab-week1-preview .screen[data-state="results"] h2 { margin-bottom: 14px; }
+    @media (max-width: 380px) { #speaklab-week1-preview .phone { border-width: 6px; } #speaklab-week1-preview .screen { padding-left: 16px; padding-right: 16px; } }
+  </style>
+  <div class="preview-switcher" role="group" aria-label="Preview screen state">
+    <button type="button" data-state="idle" aria-pressed="true">Ready</button>
+    <button type="button" data-state="recording" aria-pressed="false">Recording</button>
+    <button type="button" data-state="results" aria-pressed="false">Results</button>
+  </div>
+  <div class="phone">
+    <div class="island" aria-hidden="true"></div>
+    <main class="screen" data-state="idle" aria-live="polite">
+      <div class="eyebrow">SPEAKLAB · PRACTICE RESPONSE</div>
+      <h2>Practice with focus.</h2>
+      <section class="prompt" aria-label="Practice prompt">
+        <div class="prompt-label">TODAY’S PROMPT</div>
+        <p>Tell me about a time you had to explain a complex idea clearly.</p>
+      </section>
+      <p class="hint" data-hint>Take a moment to organize your answer, then record when you’re ready.</p>
+      <section class="record-region" aria-label="Recording controls" data-region></section>
+    </main>
+  </div>
+  <script>
+    (function () {
+      const root = document.getElementById('speaklab-week1-preview');
+      const screen = root.querySelector('.screen');
+      const heading = screen.querySelector('h2');
+      const hint = root.querySelector('[data-hint]');
+      const region = root.querySelector('[data-region]');
+      const states = {
+        idle: {
+          heading: 'Practice with focus.',
+          hint: 'Take a moment to organize your answer, then record when you’re ready.',
+          region: '<button type="button" class="record" aria-label="Start recording">Start<br>recording</button>'
+        },
+        recording: {
+          heading: 'You’re recording.',
+          hint: 'Keep the prompt visible while you form your answer. Stop when you’re finished.',
+          region: '<div class="timer">00:42</div><div class="wave" aria-label="Recording active"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><button type="button" class="record stop" aria-label="Stop recording">Stop</button>'
+        },
+        results: {
+          heading: 'Practice review.',
+          hint: '',
+          region: '<section class="feedback" aria-label="Deterministic filler feedback"><div class="section-label">FILLER WORDS</div><div class="metric">3 detected</div><p>Review the transcript to see the words in context.</p></section><section class="transcript" aria-label="Transcript"><div class="section-label">TRANSCRIPT</div><p>When I explained the migration plan, I started with the customer impact, then walked the team through each step and the decision behind it.</p></section><button type="button" class="primary">Practice again</button>'
+        }
+      };
+      function render(state) {
+        const view = states[state];
+        screen.dataset.state = state;
+        heading.textContent = view.heading;
+        hint.textContent = view.hint;
+        hint.hidden = !view.hint;
+        region.innerHTML = view.region;
+        root.querySelectorAll('[data-state]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.state === state)));
+      }
+      root.querySelectorAll('[data-state]').forEach((button) => button.addEventListener('click', () => render(button.dataset.state)));
+    }());
+  </script>
+</div>
