@@ -311,3 +311,18 @@ tests, blockers, review questions, and deferred work.
 - `npm audit` reports 30 advisories (25 moderate, 5 high), including Firebase/
   Firestore/grpc and zod. These were not addressed with unrelated major
   upgrades or a Firebase downgrade; no dependency audit claim of safety is made.
+
+## PR #7 conflict resolution — 2026-10-31
+
+- Fetched `origin/main` at `2456f51` in the existing integration worktree.
+  The worktree already held the pending merge of that exact revision with its
+  conflicts marked resolved. Verified that `package.json` and `package-lock.json`
+  retain the tested SDK 58 integration versions from `bfcc52f`, their root
+  dependency declarations agree, and `expo-av` is absent.
+- Validation of the resolved tree: `npm ci` succeeded; Expo Doctor passed
+  20/20; TypeScript and lint exited 0; all 36 regression tests passed;
+  `git diff --check` passed and no unmerged paths remain.
+- Installation still reports 30 audit advisories (25 moderate, 5 high) and
+  an ESLint 9 deprecation warning. No unrelated dependency upgrades were made.
+- Completed the merge on `integration/week1-sdk58` only. No UI, speech-engine,
+  or separate checkout files were changed as part of this conflict resolution.
