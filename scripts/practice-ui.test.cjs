@@ -75,7 +75,7 @@ function recordingHarness() {
         }
       },
       useRef: initial => { const index = refCursor++; return refs[index] ||= { current: initial }; },
-      useState: initial => { const index = stateCursor++; if (!(index in states)) states[index] = initial; return [states[index], value => { states[index] = value; }]; },
+      useState: initial => { const index = stateCursor++; if (!(index in states)) states[index] = typeof initial === 'function' ? initial() : initial; return [states[index], value => { states[index] = value; }]; },
     },
     'react-native': { ...native, useWindowDimensions: () => ({ width: 402, height: 874, fontScale: 1 }),
       AccessibilityInfo: { isReduceMotionEnabled: () => new Promise(resolve => { preference = resolve; }), addEventListener: (_event, handler) => { onMotionChange = handler; return { remove() {} }; } },

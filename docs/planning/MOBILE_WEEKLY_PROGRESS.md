@@ -256,3 +256,58 @@ tests, blockers, review questions, and deferred work.
   Live microphone permission/capture/playback and a successful Railway request
   remain unverified. There is no remaining blocker to reviewing the recording
   screen's visual composition.
+
+## Week 1 / Expo SDK 58 temporary integration — 2026-10-31
+
+- Created `integration/week1-sdk58` from `feat/week1-focused-practice-studio`
+  at `618dcba`, fetched `origin/main` (`c568772`), and merged it only into the
+  temporary branch (`f65f0bb`). Local `main` and the feature branch were not
+  modified. Nothing was pushed.
+- Installation initially failed because main specified ESLint 4 against the
+  SDK 58 Expo lint configuration. Corrected ESLint to `^9.39.1`, removed the
+  unused `expo-av` dependency/import/test stub, and used `expo install --fix`
+  to align Expo 58.0.22, audio 58.0.11, Router 58.0.29, and Metro runtime
+  58.0.16. Added SDK-compatible `expo-file-system` 58.0.13 for audio upload.
+- Fixed only upgrade-triggered compatibility errors: removed obsolete
+  `newArchEnabled` and Android `edgeToEdgeEnabled` config fields; used Router's
+  compatible PlatformPressable and updated symbol/color types; initialized
+  the animation value with lazy state and synchronized preview query changes
+  without an effect, satisfying the new React lint rules. Recording styles,
+  prompt, design tokens, and speech-engine algorithms were preserved.
+- Real device-path test: updated official Expo Go to 58.0.7 on the iPhone 17
+  simulator, loaded the normal authenticated `/` route with Home/Explore tabs,
+  and used the real `useAudioRecording` hook. No fixture route or authentication
+  bypass was used. Native recording state and duration advanced, Stop produced
+  an actual M4A file, and Replay progressed from time 0 to 21.407 seconds before
+  reporting `playing: false` at the end. `afinfo` confirmed a 21.407347-second,
+  44.1kHz stereo AAC recording. Temporary native-state logging was removed.
+- The first real submission reproduced SDK 58's `Unsupported FormDataPart
+  implementation` error. Root cause: Expo's current fetch/FormData rejects
+  legacy React Native `{ uri, name, type }` file descriptors. Native File.slice
+  also relies on React Native Blob behavior that rejects typed-array input.
+  The final fix appends Expo's native File directly. The POST endpoint, `audio`
+  field, `.m4a` filename, response validation, and filler analysis remain intact;
+  browser blob URLs retain a browser-only fetch path. This follows Expo's
+  documented native File multipart upload pattern:
+  https://docs.expo.dev/versions/latest/sdk/filesystem/#uploading-files-using-expofetch
+- Retried from the actual recorded state: Railway POST succeeded and the app
+  displayed a validated transcript (`you`) with zero filler words. A GET probe
+  had returned `Cannot GET /transcribe` (404), which did not establish POST
+  availability; the successful app submission is the accepted backend evidence.
+- Evidence: `docs/design/explorations/sdk58-live-recording.png` shows real
+  elapsed recording; `sdk58-live-transcription.png` shows the returned result.
+  These are actual native, nonfixture captures. Expo Go's blue developer-tools
+  button is visible and is not part of the product design.
+- Final checks: installation succeeded without force/legacy-peer-deps;
+  `expo install --check` reported dependencies up to date; Expo Doctor passed
+  20/20; TypeScript and lint exited 0; all existing regression tests plus two
+  upload regressions passed (36/36). Production iOS Expo export succeeded at
+  `/tmp/speaklab-sdk58-ios-export`. `git diff --check` passed.
+- Merge assessment: no remaining SDK compatibility failure was found in the
+  tested iOS path. Audible speech quality still needs a spoken-audio check:
+  the Simulator capture's small AAC payload is consistent with silence, and
+  successful native capture/playback/upload does not prove intelligible voice
+  input or transcription accuracy. A physical-device check remains advisable.
+- `npm audit` reports 30 advisories (25 moderate, 5 high), including Firebase/
+  Firestore/grpc and zod. These were not addressed with unrelated major
+  upgrades or a Firebase downgrade; no dependency audit claim of safety is made.
