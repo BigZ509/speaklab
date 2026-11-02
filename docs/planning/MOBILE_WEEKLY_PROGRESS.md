@@ -35,6 +35,8 @@
 
 ## Week 1 implementation in progress
 
+- Rewrote `speechEngine/fillers.ts` in the original straightforward helper-and-loop style while preserving normalization, timestamps, adjacent-filler context, and multi-word phrase matching. Focused filler tests and the full 36-test Node regression suite pass.
+
 - Dedicated worktree: `/private/tmp/speaklab-week1-focused-practice-studio` on
   `feat/week1-focused-practice-studio`; the original `main` checkout remains
   untouched.

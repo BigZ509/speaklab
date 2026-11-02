@@ -1,10 +1,14 @@
 import { TranscriptResults } from "@/scripts/types/types";
 
-export type TranscriptWords = { word: string; start: number; end: number };
+export type TranscriptWords = {
+    word: string;
+    start: number;
+    end: number;
+};
 export type Occurence = { start: number; end: number };
 
 const unambigousSet = new Set([
-    //obvious fillers
+    // obvious fillers
     "uh",
     "um",
     "umm",
@@ -19,7 +23,7 @@ const unambigousSet = new Set([
     "mhm"
  ]);
 const ambigousSet = new Set([
-    //need context checked
+    // need context checked
     "like",
     "so",
     "well",
@@ -46,38 +50,123 @@ const ambigousSet = new Set([
  ]);
 
 
-export function fillerAnalyzer(transcript: TranscriptResults) {
-  const occurrences = new Map<string, Occurence[]>();
-  // Keep timestamps while normalizing punctuation and case.
-  const words = transcript.words.map(item => ({
-    ...item,
-    word: item.word.trim().toLowerCase().replace(/^[^a-z]+|[^a-z]+$/g, ""),
-  }));
-  const phrases = Array.from(ambigousSet, phrase => phrase.split(" "))
-    .sort((a, b) => b.length - a.length);
+function cleanWord(word: string): string {
+    return word.trim().toLowerCase().replace(/^[^a-z]+|[^a-z]+$/g, "");
+}
 
-  const add = (word: string, start: number, end: number) => {
-    const matches = occurrences.get(word) ?? [];
-    matches.push({ start, end });
-    occurrences.set(word, matches);
-  };
+function cleanTranscript(transcript: TranscriptResults): TranscriptWords[] {
+    const words: TranscriptWords[] = [];
 
-  for (let i = 0; i < words.length; i++) {
-    const item = words[i];
-    if (unambigousSet.has(item.word)) {
-      add(item.word, item.start, item.end);
-      continue;
+    for (const item of transcript.words) {
+        words.push({
+            word: cleanWord(item.word),
+            start: item.start,
+            end: item.end
+        });
     }
-    // Prefer full phrases and keep the existing adjacent-filler rule.
-    const phrase = phrases.find(parts =>
-      parts.every((part, offset) => words[i + offset]?.word === part) &&
-      (unambigousSet.has(words[i - 1]?.word) ||
-       unambigousSet.has(words[i + parts.length]?.word))
+
+    return words;
+}
+
+function addFiller(
+    fillerOccurence: Map<string, Occurence[]>,
+    word: string,
+    start: number,
+    end: number
+) {
+    if (!fillerOccurence.has(word)) {
+        fillerOccurence.set(word, []);
+    }
+
+    fillerOccurence.get(word)?.push({ start, end });
+}
+
+function findUnambigous(
+    words: TranscriptWords[],
+    fillerOccurence: Map<string, Occurence[]>
+) {
+    for (const word of words) {
+        if (unambigousSet.has(word.word)) {
+            addFiller(fillerOccurence, word.word, word.start, word.end);
+        }
+    }
+}
+
+function getPhraseAt(
+    words: TranscriptWords[],
+    index: number,
+    phrase: string[]
+): TranscriptWords[] | undefined {
+    const phraseWords: TranscriptWords[] = [];
+
+    for (let offset = 0; offset < phrase.length; offset++) {
+        const word = words[index + offset];
+
+        if (!word || word.word !== phrase[offset]) {
+            return undefined;
+        }
+
+        phraseWords.push(word);
+    }
+
+    return phraseWords;
+}
+
+function hasObviousFillerBeside(
+    words: TranscriptWords[],
+    startIndex: number,
+    phraseLength: number
+): boolean {
+    const wordBefore = words[startIndex - 1];
+    const wordAfter = words[startIndex + phraseLength];
+
+    return Boolean(
+        (wordBefore && unambigousSet.has(wordBefore.word)) ||
+        (wordAfter && unambigousSet.has(wordAfter.word))
     );
-    if (phrase) {
-      add(phrase.join(" "), item.start, words[i + phrase.length - 1].end);
-      i += phrase.length - 1;
+}
+
+function findAmbigous(
+    words: TranscriptWords[],
+    fillerOccurence: Map<string, Occurence[]>
+) {
+    const phrases = Array.from(ambigousSet).sort(
+        (first, second) => second.split(" ").length - first.split(" ").length
+    );
+
+    for (let index = 0; index < words.length; index++) {
+        for (const phrase of phrases) {
+            const phraseWords = getPhraseAt(words, index, phrase.split(" "));
+
+            if (!phraseWords) {
+                continue;
+            }
+
+            if (!hasObviousFillerBeside(words, index, phraseWords.length)) {
+                continue;
+            }
+
+            addFiller(
+                fillerOccurence,
+                phrase,
+                phraseWords[0].start,
+                phraseWords[phraseWords.length - 1].end
+            );
+            index += phraseWords.length - 1;
+            break;
+        }
     }
-  }
-  return occurrences;
+}
+
+export function fillerAnalyzer(transcript: TranscriptResults) {
+    const fillerOccurence = new Map<string, Occurence[]>();
+    const words = cleanTranscript(transcript);
+
+    // Obvious fillers are always recorded.
+    findUnambigous(words, fillerOccurence);
+
+    // Ambiguous fillers need an obvious filler next to them.
+    findAmbigous(words, fillerOccurence);
+
+    return fillerOccurence;
 }
