@@ -1,0 +1,30 @@
+# SL-01: ASR Pipeline Audit
+
+## 1. Recording Pipeline
+The way the recording pipeline works is a call is made to the user phone os which either enables or disables authorization to use the audio if accepted recording starts if denied recording stop everything returns to a null state. The next step is the user recording the audio which is tempoarely stored on the users device and then it later gets sent to the backend which is a node js backend and this allows me to contrl how the app interacts with the api.
+Stop recorind is an asynchornize function which means it has to await a call it await the stop call which then once it gets the call this now set the recording to the recording.uri which the uri is the identifier adress of the audio and can take you direclty to said audio.
+replay audio function checks wether audio is loaded and if its not prompt the error if it is calls the play function in into the recoring which finds the current audio and plays it back for the user to hear. Submition flight is used to stop duplicate recording as in you can no longer re recording if something is currnely in your submition flight. the first check is if the submition flight has audio or an object in it you return you no longer allow a recording. The submition workflow is once the you press submit it checks if there is an adio uri file to submit if checks wether recording is true and still recording and if submition flight is true if any of these checks get flagged you get return so it stops duplucate submissions of the same audio. If it passes these it then gets sent once audio get sent the submition funciton awaits the transcription from the api calls filler with the transcription which then runs the dectection of the transcription it then stores this stores the filler results and on failure it runs error check on the failure get the error message and set the error failure aswell as the error pass it to error handling function which basically prints the error with the message and at the end it sets submition flight current to false. 
+
+## 2. Transcription Service
+How the recording is sent to the backend.
+The way the audio get sent to the backend is through blob which is binary data my audio recording. I implemented dataFrom which packages my data audio into an object block which is then sent over through htpp request that I append the data adds the audio under audio and names the file recordingm4a which then allows the backend to process my audio. I implemented a post call because this post is a request over http to the backend I packed the audio in the formData. The response await the fetch which is the promise then test if it was sucesful before turning it into a json object.I check response ok because unsucessful response may still return an a json object but unsucessful response should not process into the transcription data. Once the http fetch returns a valid code the json object gets moved to another check to see if it matches the correct object type my code is expecting.
+
+## 3. Filler Word Analysis
+How the application detects filler words.
+This filler algorithmn here receives a transcription json object with the transcript aswell as different properties of it. I implemented a clean function which cleans the text removes blank space aswell put everything into lower case. I then implemented another clean which the job of this clean function called cleantranscript which cleans and push the words to their correct array inside the object. i implemented a map which has o(1) look up which is very efficient for occurence look up. which has a 1 to many implementatin as the word as key can give me all the time stamps in which this word was said. I store all the time stamps of when the word occurs because this can then be more useful for feedback rather you said um 15 times it can now be you said um before transitional word. I chose to seperate obvious and ambigous fillers because not every flagged filler is a filler.I implemented an obviousFillerBeside function which is used to check the word adjacent to the ambiguous filler to reduce false positives before classifiying There are limitation but good start.The current implementation has a possibility of a false positive so this will be fixed once I implement the pause filler checker. Current implementation has an issue which will be fixed more contexual data is needed to stop false positives.
+
+## 4. Error Handling
+What happens when something fails.
+Currently my app awaits for the backend response without a specific timeout threshold. if the request hangs the user is stucking in a submitting state.I need to implement a request error seprate so a controler that handles timeout and allows a retry without losing your data. I need implement a unique key for each request so the backend can check against duplicates.I can reserve the key incase 2 request come in at the same time.
+
+## 5. Architecture Decisions
+Why the system is structured this way.
+The reason I chose a node js backend rather than calling my api form the app is because I get more security  and more cost efficent for duplicate calls.By routing request to my backend I can have my keys confidential,validate requests and cut api cost the trade off is making it more complex and added latency. I need to implement user ratelimit and usage quotas to control ratelimit and api cost. Currently authentication only controls who is loggef in I need the backend to actually keep track of how many request the user has made within the time frame.
+
+## 6. Questions and Unknowns
+Things I still need to investigate.
+Things I still need to investigate are the python script I need to write aswell as implementing the open source stuff to build my detection engine. better to better focus on the feedback engine which will then become the heart and soul of the app.
+
+## 7. Testing and Verification
+Evidence of successful and failed requests.
+evidence of sucessful testing as been running small verified audio clips. Though i have a large sample of audio data 5,000 to be exact it gets expensive to test all at once with the api cost so for now 150 is all thats possible. 

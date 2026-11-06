@@ -43,3 +43,7 @@ app-example
 /android
 
 .env
+
+# Benchmark source audio is local-only and must not be committed.
+benchmarks/datasets/*
+!benchmarks/datasets/.gitkeep
