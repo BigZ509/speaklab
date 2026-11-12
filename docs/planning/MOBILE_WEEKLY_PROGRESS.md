@@ -15,8 +15,22 @@
   local `afinfo` duration inspection pass for ten seeded sample recordings.
   No OpenAI/backend requests, accuracy claims, audible review, UI changes,
   Mobbin research or rendered UI inspection are claimed for this research task.
-- Remaining: human listening review of the sample and confirmation of the
-  original download terms/receipt. Keep issue #10 open while these are pending.
+- User explicitly deferred the audible-reference preservation check to #11's
+  ten-recording listening/ASR comparison. No audible fidelity is claimed here;
+  the original download terms/receipt remain a documented rights question.
+  Issue #10 remains open during PR review.
+- User stopped PR progression and requested a coding-style/comment review.
+  Compared the audit implementation with `speechEngine/fillers.ts` and its
+  documented preference for named helpers, ordinary loops and clear conditionals.
+  Replaced compressed comprehensions/nested conditionals and added comments
+  explaining labels, reported-recording counts, exclusions, hashing, split
+  checks, seeded sampling and private output files. Added fixture comments too.
+- Readability verification: all 10 Python tests pass. A real local rerun produced
+  byte-for-byte identical manifest, aggregate inventory and review-sample files.
+  This pass adds no ticket functionality or paid API calls. The user then
+  authorized committing these edits, pushing the research branch and submitting
+  the issue-linked PR for teammate review. No later-ticket implementation is
+  included in that review request.
 
 ## Current authorization
 

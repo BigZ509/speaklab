@@ -196,5 +196,12 @@ the corresponding local file with a local player or `afplay`, inspect its
 source TSV row, and record `verbatim`, `normalized`, `mismatch`, `unclear` or
 `unlabeled`, plus filler/repetition observations and reviewer/date. Keep these
 notes private, and commit only a sanitized aggregate conclusion. Do not score
-the six unlabeled samples. Issue #10 stays open pending this listening evidence
-and the download-terms confirmation.
+the six unlabeled samples.
+
+For this inventory review, the user explicitly deferred the audible-reference
+check to [#11](https://github.com/BigZ509/speaklab/issues/11), which owns the
+ten-recording listening and ASR comparison. Filler preservation remains
+unverified; no listening result is claimed by this inventory. Original download
+terms/receipt confirmation remains a documented rights question. Issue #10 is
+submitted for teammate review with those limitations visible; it is not closed
+by this change.

@@ -9,16 +9,26 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-SPEC = importlib.util.spec_from_file_location("inventory", Path(__file__).with_name("inventory_corpus.py"))
+# Load the script directly because it is a standalone tool, not an app package.
+SCRIPT_PATH = Path(__file__).with_name("inventory_corpus.py")
+SPEC = importlib.util.spec_from_file_location("inventory", SCRIPT_PATH)
 inventory = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(inventory)
 
-MAIN = ["client_id", "audio_id", "audio_file", "duration_ms", "language", "transcription", "votes", "split", "quality_tags", "prompt_id"]
-REPORTED = ["client_id", "audio_id", "audio_file", "duration_ms", "language", "reason", "comment"]
+MAIN = [
+    "client_id", "audio_id", "audio_file", "duration_ms", "language",
+    "transcription", "votes", "split", "quality_tags", "prompt_id",
+]
+REPORTED = [
+    "client_id", "audio_id", "audio_file", "duration_ms", "language",
+    "reason", "comment",
+]
 
 
 class InventoryTests(unittest.TestCase):
     def setUp(self):
+        # Each test gets its own temporary corpus, removed when the test ends.
+        # These fixtures never read the user's real recordings.
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
@@ -26,39 +36,76 @@ class InventoryTests(unittest.TestCase):
         (self.root / "README.md").write_text(inventory.RELEASE)
 
     def row(self, number, **changes):
-        row = dict(client_id="private-speaker", audio_id=str(number), audio_file=f"spontaneous-speech-en-{number}.mp3", duration_ms="1000", language="English", transcription="", votes="0", split="", quality_tags="", prompt_id="1")
+        # Start with an unlabeled clip. Each test overrides only what it needs.
+        row = {
+            "client_id": "private-speaker",
+            "audio_id": str(number),
+            "audio_file": f"spontaneous-speech-en-{number}.mp3",
+            "duration_ms": "1000",
+            "language": "English",
+            "transcription": "",
+            "votes": "0",
+            "split": "",
+            "quality_tags": "",
+            "prompt_id": "1",
+        }
         row.update(changes)
         return row
 
     def write(self, main, reports=()):
-        for name, fields, rows in [("ss-corpus-en.tsv", MAIN, main), ("ss-reported-audios-en.tsv", REPORTED, reports)]:
+        tables = [
+            ("ss-corpus-en.tsv", MAIN, main),
+            ("ss-reported-audios-en.tsv", REPORTED, reports),
+        ]
+        for name, fields, rows in tables:
             with (self.root / name).open("w", newline="") as f:
                 writer = csv.DictWriter(f, fields, delimiter="\t", extrasaction="ignore")
                 writer.writeheader()
                 writer.writerows(rows)
         for row in [*main, *reports]:
             if "/" not in row["audio_file"]:
-                (self.root / "audios" / row["audio_file"]).write_bytes(b"synthetic-" + row["audio_id"].encode())
+                # Fake file bytes are enough for presence and hash checks.
+                # No actual speech is created or submitted to a service.
+                audio_path = self.root / "audios" / row["audio_file"]
+                audio_path.write_bytes(b"synthetic-" + row["audio_id"].encode())
 
     def test_labels_reports_and_privacy(self):
-        self.write([self.row(1, transcription="Um I I PRIVATE-TEXT", votes="1", split="test"), self.row(2), self.row(3, transcription="pending")], [self.row(4, comment="PRIVATE-COMMENT"), self.row(4)])
+        self.write(
+            [
+                self.row(1, transcription="Um I I PRIVATE-TEXT", votes="1", split="test"),
+                self.row(2),
+                self.row(3, transcription="pending"),
+            ],
+            [self.row(4, comment="PRIVATE-COMMENT"), self.row(4)],
+        )
         records, summary, sample = inventory.audit(self.root, 10, "seed")
         self.assertEqual(summary["counts"]["audio_files"], 4)
         self.assertEqual(summary["counts"]["report_rows"], 2)
         self.assertEqual(summary["counts"]["reported_recordings"], 1)
-        self.assertEqual(summary["reference_status"], {"missing": 1, "pending": 1, "validated": 1})
+        self.assertEqual(
+            summary["reference_status"],
+            {"missing": 1, "pending": 1, "validated": 1},
+        )
         self.assertEqual(records[0]["reference_status"], "validated")
         self.assertTrue(records[0]["textual_filled_pause"])
         self.assertTrue(records[0]["textual_repetition"])
         self.assertEqual(records[3]["exclusions"], ["reported", "missing_reference"])
-        self.assertTrue(all(r["audible_verbatim_status"] == "not_reviewed" for r in records))
+        for record in records:
+            self.assertEqual(record["audible_verbatim_status"], "not_reviewed")
         exported = json.dumps([records, summary, sample])
         for secret in ["private-speaker", "PRIVATE-TEXT", "PRIVATE-COMMENT"]:
             self.assertNotIn(secret, exported)
 
     def test_leakage_and_missing_data(self):
-        self.write([self.row(1, transcription="same", votes="1", split="train"), self.row(2, transcription="same", votes="1", split="test"), self.row(3, client_id="", duration_ms="nan", language="")])
-        (self.root / "audios" / "spontaneous-speech-en-2.mp3").write_bytes((self.root / "audios" / "spontaneous-speech-en-1.mp3").read_bytes())
+        self.write([
+            self.row(1, transcription="same", votes="1", split="train"),
+            self.row(2, transcription="same", votes="1", split="test"),
+            self.row(3, client_id="", duration_ms="nan", language=""),
+        ])
+        # Put identical bytes in train and test to simulate a leaked recording.
+        first_audio = self.root / "audios" / "spontaneous-speech-en-1.mp3"
+        second_audio = self.root / "audios" / "spontaneous-speech-en-2.mp3"
+        second_audio.write_bytes(first_audio.read_bytes())
         (self.root / "audios" / "spontaneous-speech-en-3.mp3").unlink()
         records, summary, _ = inventory.audit(self.root, 10, "seed")
         self.assertEqual(summary["leakage"]["speakers_in_multiple_splits"], 1)
@@ -111,7 +158,12 @@ class InventoryTests(unittest.TestCase):
     def test_cli_writes_repeatable_artifacts_without_source_text(self):
         self.write([self.row(1, transcription="PRIVATE-TEXT", votes="1", split="test")])
         output = self.root / "output"
-        command = [sys.executable, str(Path(inventory.__file__)), "--corpus", str(self.root), "--output", str(output), "--sample-size", "1"]
+        command = [
+            sys.executable, str(SCRIPT_PATH),
+            "--corpus", str(self.root),
+            "--output", str(output),
+            "--sample-size", "1",
+        ]
         first = subprocess.run(command, capture_output=True, text=True)
         self.assertEqual(first.returncode, 0, first.stderr)
         snapshot = {p.name: p.read_bytes() for p in output.iterdir()}
@@ -138,12 +190,22 @@ class InventoryTests(unittest.TestCase):
             inventory.audit(self.root)
 
     def test_duration_probe_distinguishes_mismatch_and_read_failure(self):
-        sample = [{"audio_file": "spontaneous-speech-en-1.mp3", "duration_ms": 1000} for _ in range(3)]
-        with patch.object(inventory.shutil, "which", return_value="/usr/bin/afinfo"), patch.object(inventory.subprocess, "run", side_effect=[
+        sample = []
+        for index in range(3):
+            sample.append({
+                "audio_file": f"spontaneous-speech-en-{index + 1}.mp3",
+                "duration_ms": 1000,
+            })
+        # Supply fake afinfo results so these tests also run outside macOS.
+        responses = [
             subprocess.CompletedProcess([], 0, "estimated duration: 1.000000 sec"),
             subprocess.CompletedProcess([], 0, "estimated duration: 2.000000 sec"),
             subprocess.CompletedProcess([], 1, ""),
-        ]):
+        ]
+        with (
+            patch.object(inventory.shutil, "which", return_value="/usr/bin/afinfo"),
+            patch.object(inventory.subprocess, "run", side_effect=responses),
+        ):
             inventory.probe_sample(self.root, sample)
         self.assertEqual([r["duration_probe"] for r in sample], ["matches_within_100ms", "needs_review", "failed"])
         self.assertEqual(sample[1]["duration_difference_ms"], 1000)
@@ -152,12 +214,18 @@ class InventoryTests(unittest.TestCase):
         self.write([self.row(1), self.row(2)])
         source = self.root / "ss-corpus-en.tsv"
         text = source.read_text()
+        # Leave a quote open in the last column. A permissive parser would
+        # accidentally consume the next recording as part of this field.
         text = text.replace("\t1\n", '\t"unfinished\n', 1)
         source.write_text(text)
         with self.assertRaises((ValueError, csv.Error)):
             inventory.audit(self.root)
         output = self.root / "output"
-        result = subprocess.run([sys.executable, inventory.__file__, "--corpus", str(self.root), "--output", str(output)], capture_output=True, text=True)
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT_PATH), "--corpus", str(self.root), "--output", str(output)],
+            capture_output=True,
+            text=True,
+        )
         self.assertEqual(result.returncode, 2)
         self.assertIn("Inventory failed:", result.stderr)
         self.assertNotIn("Traceback", result.stderr)

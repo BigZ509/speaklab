@@ -47,7 +47,9 @@ Use a local CLI and aggregate report. A manual spreadsheet would be harder to re
 - [x] Check in aggregate evidence and template; document confirmed facts, limitations, rights questions and reproducible local review commands.
 - [ ] Run focused tests, existing regression tests and diff/privacy checks; commit to the issue branch and open a linked PR with a teammate review request.
 
-Human listening remains explicit follow-up if this session cannot hear local audio. Leave issue #10 open while that evidence is pending.
+The user explicitly deferred audible-reference verification to issue #11's
+listening/ASR comparison. Its status remains unverified in this inventory.
+Leave issue #10 open during teammate review; do not claim listening was performed.
 
 ## Implementation evidence
 
