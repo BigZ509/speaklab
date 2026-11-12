@@ -45,7 +45,7 @@ Use a local CLI and aggregate report. A manual spreadsheet would be harder to re
 - [x] Implement the CLI and make tests pass.
 - [x] Run inventory on the actual local corpus and independently spot-check seeded sample entries against TSV metadata and audio durations.
 - [x] Check in aggregate evidence and template; document confirmed facts, limitations, rights questions and reproducible local review commands.
-- [ ] Run focused tests, existing regression tests and diff/privacy checks; commit to the issue branch and open a linked PR with a teammate review request.
+- [x] Run focused tests, existing regression tests and diff/privacy checks; commit to the issue branch and open a linked PR with a teammate review request.
 
 The user explicitly deferred audible-reference verification to issue #11's
 listening/ASR comparison. Its status remains unverified in this inventory.
@@ -65,3 +65,5 @@ Leave issue #10 open during teammate review; do not claim listening was performe
 - Audible fidelity, model accuracy, download receipt/archive authenticity,
   legal interpretation, acoustic deduplication and actual speaker identity
   remain outside this automated verification. The report records these limits.
+- Review submitted in [PR #30](https://github.com/BigZ509/speaklab/pull/30),
+  with `RJelsewhere` requested. Issue #10 remains open during review.

@@ -31,6 +31,11 @@
   authorized committing these edits, pushing the research branch and submitting
   the issue-linked PR for teammate review. No later-ticket implementation is
   included in that review request.
+- Submitted [PR #30](https://github.com/BigZ509/speaklab/pull/30) from
+  `research/sl-03-corpus-inventory` to `main`, linked to issue #10, and requested
+  `RJelsewhere`'s review. Fresh checks passed: 10 Python tests, 36 Node
+  regressions and diff/privacy verification. No merge or issue closure was
+  performed.
 
 ## Current authorization
 
