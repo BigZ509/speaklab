@@ -1,0 +1,2 @@
+recording_id,corpus_release,audio_file,duration_ms,duration_provenance,language,speaker_id,speaker_id_provenance,speech_type,reference_provenance,reference_status,source_split,audible_verbatim_status,filler_event_labels,exclusions
+synthetic-example,synthetic-fixture,example.wav,1000,synthetic,en,synthetic-speaker,synthetic,prompted_spontaneous,none,missing,,not_reviewed,unavailable,missing_reference

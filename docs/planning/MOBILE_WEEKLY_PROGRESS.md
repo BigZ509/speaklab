@@ -1,5 +1,42 @@
 # Mobile Weekly Progress
 
+## Explicitly requested SL-03 research — 2026-11-11
+
+- User authorized implementation of issue #10's dataset inventory on a branch.
+  Scope is offline dataset research; this does not advance any mobile journey
+  or change speech-engine, backend, auth or infrastructure behavior.
+- Plan: `docs/superpowers/plans/2026-11-11-sl-03-corpus-inventory.md`.
+  Report: `docs/audits/sl-03-corpus-inventory.md`.
+- Reconciled 8,703 local MP3s into 5,898 regular and 2,805 distinct reported
+  recordings. References: 2,474 validated, 97 pending, 3,327 absent. Full
+  per-record outputs remain ignored; only aggregate evidence and a synthetic
+  manifest template are checked in.
+- Verification: 10 focused fixture tests pass; independent TSV checks and
+  local `afinfo` duration inspection pass for ten seeded sample recordings.
+  No OpenAI/backend requests, accuracy claims, audible review, UI changes,
+  Mobbin research or rendered UI inspection are claimed for this research task.
+- User explicitly deferred the audible-reference preservation check to #11's
+  ten-recording listening/ASR comparison. No audible fidelity is claimed here;
+  the original download terms/receipt remain a documented rights question.
+  Issue #10 remains open during PR review.
+- User stopped PR progression and requested a coding-style/comment review.
+  Compared the audit implementation with `speechEngine/fillers.ts` and its
+  documented preference for named helpers, ordinary loops and clear conditionals.
+  Replaced compressed comprehensions/nested conditionals and added comments
+  explaining labels, reported-recording counts, exclusions, hashing, split
+  checks, seeded sampling and private output files. Added fixture comments too.
+- Readability verification: all 10 Python tests pass. A real local rerun produced
+  byte-for-byte identical manifest, aggregate inventory and review-sample files.
+  This pass adds no ticket functionality or paid API calls. The user then
+  authorized committing these edits, pushing the research branch and submitting
+  the issue-linked PR for teammate review. No later-ticket implementation is
+  included in that review request.
+- Submitted [PR #30](https://github.com/BigZ509/speaklab/pull/30) from
+  `research/sl-03-corpus-inventory` to `main`, linked to issue #10, and requested
+  `RJelsewhere`'s review. Fresh checks passed: 10 Python tests, 36 Node
+  regressions and diff/privacy verification. No merge or issue closure was
+  performed.
+
 ## Current authorization
 
 - Active week: **Week 1 — baseline and contract**
