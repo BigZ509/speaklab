@@ -1,5 +1,23 @@
 # Mobile Weekly Progress
 
+## Explicitly requested SL-03 research — 2026-11-11
+
+- User authorized implementation of issue #10's dataset inventory on a branch.
+  Scope is offline dataset research; this does not advance any mobile journey
+  or change speech-engine, backend, auth or infrastructure behavior.
+- Plan: `docs/superpowers/plans/2026-11-11-sl-03-corpus-inventory.md`.
+  Report: `docs/audits/sl-03-corpus-inventory.md`.
+- Reconciled 8,703 local MP3s into 5,898 regular and 2,805 distinct reported
+  recordings. References: 2,474 validated, 97 pending, 3,327 absent. Full
+  per-record outputs remain ignored; only aggregate evidence and a synthetic
+  manifest template are checked in.
+- Verification: 10 focused fixture tests pass; independent TSV checks and
+  local `afinfo` duration inspection pass for ten seeded sample recordings.
+  No OpenAI/backend requests, accuracy claims, audible review, UI changes,
+  Mobbin research or rendered UI inspection are claimed for this research task.
+- Remaining: human listening review of the sample and confirmation of the
+  original download terms/receipt. Keep issue #10 open while these are pending.
+
 ## Current authorization
 
 - Active week: **Week 1 — baseline and contract**
