@@ -6,3 +6,4 @@ node_modules/
 coverage/
 *adminsdk*.json
 *service-account*.json
+dist/
