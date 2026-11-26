@@ -1,0 +1,30 @@
+{
+  "text": "I enjoy learning software engineering.",
+  "words": [
+    {
+      "word": "I",
+      "start": 0.0,
+      "end": 0.2
+    },
+    {
+      "word": "enjoy",
+      "start": 0.2,
+      "end": 0.6
+    },
+    {
+      "word": "learning",
+      "start": 0.6,
+      "end": 1.1
+    },
+    {
+      "word": "software",
+      "start": 1.1,
+      "end": 1.6
+    },
+    {
+      "word": "engineering.",
+      "start": 1.6,
+      "end": 2.2
+    }
+  ]
+}
